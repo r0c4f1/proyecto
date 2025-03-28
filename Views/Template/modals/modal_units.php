@@ -40,6 +40,13 @@
               Nombre de la Unidad
               <input id="nombre" type="text" name="nombre" class="form-control" placeholder="Nombre de la Unidad" maxlength="50">
             </label>
+            
+            <label class="col-12 mb-4">
+                            Motivo Actualizacion
+                            <div class="form-floating">
+                                <textarea class="form-control" name="motivo" style="height: 100px"></textarea>
+                            </div>
+                        </label>
           </div>
         </div>
         <div class="modal-footer">

@@ -76,6 +76,13 @@
                                 <option value="1">Incidencia</option>
                             </select>
                         </label>
+
+                        <label class="col-12 mb-4">
+                            Motivo Actualizacion
+                            <div class="form-floating">
+                                <textarea class="form-control" name="motivo" style="height: 100px"></textarea>
+                            </div>
+                        </label>
                     </div>
 
 

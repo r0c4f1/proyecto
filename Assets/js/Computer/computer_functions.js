@@ -32,6 +32,11 @@ function alertTimeOut(icon, text, timer) {
     timer,
   });
 }
+// ============== VARIALBLES HISTORICO =================
+let tipoOperacion = "";
+let descripcionOperacion = "";
+let estadoOperacion = 0;
+// =====================================================
 
 // =============================================== AGREGAR REGISTRO ======================================================== //
 
@@ -65,6 +70,13 @@ formAddComputer.addEventListener("submit", async (e) => {
 
   let formData = new FormData(formAddComputer);
 
+  // ==================== HISTORICO ====================================
+  tipoOperacion = "Creación";
+  descripcionOperacion = `Se Registro el Computador: <strong>${formData.get(
+    "codigo"
+  )}</strong>, 
+  Modelo: <strong>${formData.get("modelo")}</strong>`;
+  // ==================== HISTORICO ====================================
   let query = await fetch(`${base_url}/Computer/insertComputer`, {
     method: "POST",
     body: formData,
@@ -80,6 +92,8 @@ formAddComputer.addEventListener("submit", async (e) => {
       showConfirmButton: false,
       timer: 1500,
     });
+    estadoOperacion = 1;
+    historico(tipoOperacion, descripcionOperacion, estadoOperacion);
     COMPUTER_TABLE.ajax.reload();
     btnCloseModalAddComputer.click();
     formAddComputer.reset();
@@ -91,30 +105,68 @@ formAddComputer.addEventListener("submit", async (e) => {
       showConfirmButton: false,
       timer: 1500,
     });
+    historico(tipoOperacion, descripcionOperacion, estadoOperacion);
   }
 });
 
 // =================================================== ELIMINAR REGISTRO ====================================================== //
 
 function confirmed(id) {
-  console.log(id);
   Swal.fire({
     title: "¿Está seguro?",
-    text: "Este cambio no será reversible",
+    html: `
+      <p>Este cambio no será reversible. Por favor, especifique el motivo:</p>
+      <textarea class="border rounded p-2 col-12" id="motivoEliminar" rows="4" cols="50" placeholder="Escriba el motivo aquí"></textarea>
+    `,
     icon: "warning",
     iconColor: "#d33",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
     confirmButtonText: "Sí",
+    preConfirm: () => {
+      const motivo = document.getElementById("motivoEliminar").value;
+
+      // Validar longitud del motivo
+      if (!validator.isLength(motivo, { min: 8, max: 200 })) {
+        Swal.showValidationMessage(
+          "El motivo debe tener entre 8 y 200 caracteres."
+        );
+        return false;
+      }
+
+      // Validar caracteres permitidos en el motivo
+      if (!validator.matches(motivo, /^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9@.,\-\_\s]+$/)) {
+        Swal.showValidationMessage(
+          "El motivo contiene caracteres no permitidos."
+        );
+        return false;
+      }
+
+      // Retornar el motivo si pasa todas las validaciones
+      return motivo;
+    },
   }).then((result) => {
     if (result.isConfirmed) {
-      deleteComputer(id);
+      const motivo = result.value; // Aquí tienes el motivo validado
+      deleteComputer(id, motivo);
     }
   });
 }
 
-async function deleteComputer(id) {
+async function deleteComputer(id, motivo) {
+  let queryGet = await fetch(`${base_url}/Computer/getComputer/${id}`);
+  let data = await queryGet.json();
+
+  //================== HISTORICO DE OPERACIONES ======================
+
+  tipoOperacion = "Eliminación";
+  descripcionOperacion = `Se Elimino el Computador: <strong>${data.codigo}</strong>, 
+  Modelo: <strong>${data.modelo}</strong>, 
+  \nMotivo: ${motivo}`;
+
+  // ==================================================================
+
   let query = await fetch(`${base_url}/Computer/deleteComputer/${id}`);
   let { status, title, msg } = await query.json();
 
@@ -127,6 +179,8 @@ async function deleteComputer(id) {
       showConfirmButton: false,
       timer: 1500,
     });
+    estadoOperacion = 1;
+    historico(tipoOperacion, descripcionOperacion, estadoOperacion);
     COMPUTER_TABLE.ajax.reload();
   } else {
     Swal.fire({
@@ -136,6 +190,7 @@ async function deleteComputer(id) {
       showConfirmButton: false,
       timer: 1500,
     });
+    historico(tipoOperacion, descripcionOperacion, estadoOperacion);
   }
 }
 
@@ -161,6 +216,7 @@ formEditComputer.addEventListener("submit", async (e) => {
 
   let formEditComputer = document.getElementById("formEditComputer");
   let inputs = formEditComputer.querySelectorAll("input");
+  let textArea = formEditComputer.querySelectorAll("textarea");
 
   if (
     !validator.isLength(inputs.item(1).value, { min: 1, max: 50 }) ||
@@ -178,7 +234,31 @@ formEditComputer.addEventListener("submit", async (e) => {
     return;
   }
 
+  if (textArea.item(0).value === "") {
+    alertTimeOut("error", "Campo Motivo Actualización vacío", 3000);
+    return;
+  }
+
+  if (
+    !validator.isLength(textArea.item(0).value, { min: 1, max: 500 }) ||
+    !validator.matches(
+      textArea.item(0).value,
+      /^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9@.,\-\_\s]+$/
+    )
+  ) {
+    alertTimeOut("error", "Motivo Actualización inválida", 3000);
+    return;
+  }
   let formData = new FormData(formEditComputer);
+
+  // ================== historico ==================================
+  tipoOperacion = "Actualización";
+  descripcionOperacion = `Se Actualizo el Registro del Computador: <strong>${formData.get(
+    "codigo"
+  )}</strong>, 
+  Modelo: <strong>${formData.get("modelo")}</strong> 
+  Motivo: ${formData.get("motivo")}`;
+  // ================== historico ==================================
 
   let query = await fetch(`${base_url}/Computer/editComputer`, {
     method: "POST",
@@ -195,6 +275,8 @@ formEditComputer.addEventListener("submit", async (e) => {
       showConfirmButton: false,
       timer: 1500,
     });
+    estadoOperacion = 1;
+    historico(tipoOperacion, descripcionOperacion, estadoOperacion);
     COMPUTER_TABLE.ajax.reload();
     btnCloseModalEditComputer.click();
   } else {
@@ -205,5 +287,21 @@ formEditComputer.addEventListener("submit", async (e) => {
       showConfirmButton: false,
       timer: 1500,
     });
+    historico(tipoOperacion, descripcionOperacion, estadoOperacion);
   }
 });
+
+// ===================== HISTORICO DE OPERACIONES ======================
+async function historico(tipoOperacion, descripcionOperacion, estadoOperacion) {
+  const formData = new FormData();
+  formData.append("id_usuario", userId);
+  formData.append("tipoOperacion", tipoOperacion);
+  formData.append("descripcionOperacion", descripcionOperacion);
+  formData.append("estadoOperacion", estadoOperacion);
+
+  let query = await fetch(base_url + "/Settings/insertHistorico", {
+    method: "POST",
+    body: formData,
+  });
+  let data = await query.json();
+}

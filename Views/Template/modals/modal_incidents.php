@@ -24,23 +24,23 @@
 
                         <label class="col-12 mb-3 text-primary" id="labelCodigo" hidden>
                             Computadora
-                            <select name="codigo" id="codigo" class="form-select" hidden>
-                                <option value="">---</option>
+                           <select name="codigo" id="codigo" class="form-select" hidden>
+                           <option value="">---</option>
                             </select>
                         </label>
 
                         <div id="container" class="input-group mt-2">
                             <label for="recurso" class="col-6">
                                 Recurso
-                                <select id="recurso" name="recurso1" class="form-select">
+                                <select id="recurso" name="recurso1" class="form-select" required>
                                     <option value="">---</option>
                                 </select>
                             </label>
                             <div class="col-5 ms-2">
                                 <label>
                                     Cantidad
-                                    <input type="number" name="cantidad1" id="cantRecurso" class="form-control"
-                                        placeholder="10">
+                                    <input type="number" name="cantidad1" id="cantRecurso" class="form-control" placeholder="10"
+                                        required>
                                 </label>
                             </div>
                         </div>
@@ -57,7 +57,8 @@
                 <div class="modal-footer d-flex aling-content-center justify-content-center">
                     <button type="button" class="btn btn-secondary" id="btnCloseAddIncidentAssignment"
                         data-bs-dismiss="modal">Cerrar</button>
-                    <button type="submit" class="btn btn-primary" id="btnGuardarIncidentAssignment">Asignar</button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardarIncidentAssignment"
+                        disabled>Asignar</button>
                 </div>
             </form>
         </div>
@@ -225,7 +226,7 @@
                     aria-label="Close"></button>
             </div>
             <div class="modal-body d-flex flex-column" style="min-height: 300px;">
-
+                
                 <div id="listaUsuarios" class="row"></div> <!-- Contenedor para las tarjetas -->
             </div>
             <div class="modal-footer">

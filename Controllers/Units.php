@@ -71,9 +71,25 @@ class Units extends Controllers{
                 $arrResponse = array("status" => true);
                 
             }else{
-                $arrResponse = array("status" => false, "title" => "Error!", "msg" => "Error");
+                $arrResponse = array("status" => false, "title" => "Error!", "msg" => "Error, No se pudo Actualizar");
             }
 
+
+            echo json_encode($arrResponse, JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+    public  function cancelUnit($id){
+        if ($_GET) {
+            
+            $requestUser = $this->model->cancelUnit($id);
+
+            if($requestUser){
+                $arrResponse = array("status" => true);
+                
+            }else{
+                $arrResponse = array("status" => false, "title" => "Error!", "msg" => "Error, No se pudo eliminar");
+            }
 
             echo json_encode($arrResponse, JSON_UNESCAPED_UNICODE);
         }

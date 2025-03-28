@@ -563,10 +563,6 @@ async function updateProject(e) {
 
   const formData = new FormData(formAddProject);
   // formData.append("admin", checked ? 1 : 0);
-  // for (const [key, value] of formData.entries()) {
-  //   console.log(`${key}: ${value}`);
-  // }
-  // console.log(formData.get("nombre"));
 
   // ========== CARGAR DATOS PARA EL HISTORICO =============
   tipoOperacion = "Actualización";

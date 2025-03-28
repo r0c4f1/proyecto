@@ -37,5 +37,14 @@ class UnitsModel extends Mysql
         
             return $request;
         }
+
+        public function cancelUnit($id) {
+            $sql = "UPDATE unidad SET status = ? WHERE id_unidad = $id";
+            $arrData = array(0); // Incluye $id en $arrData
+        
+            $request = $this->update($sql, $arrData);
+        
+            return $request;
+        }
         
     }

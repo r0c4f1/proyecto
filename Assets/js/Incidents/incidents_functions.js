@@ -61,7 +61,9 @@ let selectTipoIncidentEdit = document.getElementById("tipoIncidentEdit");
 let selectRecurso = document.getElementById("recurso");
 let btnCloseModalAddIncident = document.getElementById("btnCloseAddIncident");
 let btnCloseEditIncident = document.getElementById("btnCloseEditIncident");
-
+let btnGuardarIncidentAssignment = document.getElementById(
+  "btnGuardarIncidentAssignment"
+);
 let btnCloseAddIncidentAssignment = document.getElementById(
   "btnCloseAddIncidentAssignment"
 );
@@ -662,9 +664,6 @@ formAddIncidentAssignment.addEventListener("submit", async (e) => {
         : document.getElementById("codigo").value
     }`
   );
-  if (document.getElementById("recurso").value === "") {
-    formData.append("recurso1", 0);
-  }
 
   // Iterar sobre el contenido
   for (let [clave, valor] of formData.entries()) {
@@ -811,8 +810,11 @@ cantRecurso.addEventListener("focusout", (e) => {
       timer: 1500,
     });
 
+    btnGuardarIncidentAssignment.setAttribute("disabled", true);
     return;
   }
+
+  btnGuardarIncidentAssignment.removeAttribute("disabled");
 });
 
 window.addEventListener("DOMContentLoaded", () => {

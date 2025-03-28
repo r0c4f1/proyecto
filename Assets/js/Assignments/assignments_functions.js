@@ -287,7 +287,7 @@ async function cancelarProyecto(id_asignacion, id_proyecto, motivo) {
       showConfirmButton: false,
       timer: 1500,
     });
-    ASIGNACIONESPROYECTO_TABLE.ajax.reload();
+    ASIGNACIONESPROEYCTO_TABLE.ajax.reload();
   } else {
     Swal.fire({
       icon: "error",

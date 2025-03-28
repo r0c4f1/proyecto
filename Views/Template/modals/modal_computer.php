@@ -51,6 +51,13 @@
                             Modelo
                             <input type="text" name="modelo" class="form-control" placeholder="Especificar Modelo" maxlength="50" require>
                         </label>
+                        
+                        <label class="col-12 mb-4">
+                            Motivo Actualizacion
+                            <div class="form-floating">
+                                <textarea class="form-control" name="motivo" style="height: 100px"></textarea>
+                            </div>
+                        </label>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" id="btnCloseModalEditComputer"

@@ -38,6 +38,12 @@ function modalAddTypeIncident() {
   myModal.show();
 }
 
+// ============== VARIALBLES HISTORICO =================
+let tipoOperacion = "";
+let descripcionOperacion = "";
+let estadoOperacion = 0;
+// =====================================================
+
 //BOTONES PARA CERRAR LOS MODALES
 let btnCloseAddTypeIncident = document.getElementById(
   "btnCloseAddTypeIncident"
@@ -82,6 +88,12 @@ async function addTypeIncident(e) {
   }
 
   const formData = new FormData(formAddTypeIncident);
+  //  ================= HISTORICO DE OPERACIONES =====================
+  tipoOperacion = "Creación";
+  descripcionOperacion = `Registro de Tipo de Incidencia: <strong>${formData.get(
+    "nombre_tipo"
+  )}</strong>`;
+  // =================================================================
 
   try {
     let query = await fetch(base_url + "/TypeIncident/registerTypeIncident", {
@@ -100,6 +112,8 @@ async function addTypeIncident(e) {
         showConfirmButton: false,
         timer: 1500,
       });
+      estadoOperacion = 1;
+      historico(tipoOperacion, descripcionOperacion, estadoOperacion);
       btnCloseAddTypeIncident.click(); // Cierra el modal
       TYPEINCIDENT_TABLE.ajax.reload(); // Recarga la tabla
       formAddTypeIncident.reset();
@@ -111,6 +125,7 @@ async function addTypeIncident(e) {
         showConfirmButton: false,
         timer: 1500,
       });
+      historico(tipoOperacion, descripcionOperacion, estadoOperacion);
     }
   } catch (error) {
     console.log(error);
@@ -131,6 +146,7 @@ async function updateTypeIncident(e) {
   let formEditTypeIncident = document.getElementById("formEditTypeIncident");
   let inputs = formEditTypeIncident.querySelectorAll("input");
   let selects = formEditTypeIncident.querySelectorAll("select");
+  let textArea = formEditTypeIncident.querySelectorAll("textarea");
 
   if (
     !validator.isLength(inputs.item(1).value, { min: 8, max: 40 }) ||
@@ -148,8 +164,35 @@ async function updateTypeIncident(e) {
     return;
   }
 
+  if (textArea.item(0).value === "") {
+    alertTimeOut("error", "Campo Actualización Motivo vacío", 3000);
+    return;
+  }
+
+  if (
+    !validator.isLength(textArea.item(0).value, { min: 8, max: 200 }) ||
+    !validator.matches(
+      textArea.item(0).value,
+      /^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9@.,\-\_\s]+$/
+    )
+  ) {
+    alertTimeOut("error", "Descripción Actualización Motivo inválida", 3000);
+    return;
+  }
+
   const formData = new FormData(formEditTypeIncident);
   // formData.append("admin", checked ? 1 : 0);
+
+  for (const [key, value] of formData.entries()) {
+    console.log(`${key}: ${value}`);
+  }
+
+  // ========== CARGAR DATOS PARA EL HISTORICO =============
+  tipoOperacion = "Actualización";
+  descripcionOperacion = `Actualizacion de Tipo de Incidencia: <strong>${formData.get(
+    "nombre_tipo"
+  )}</strong>, Motivo: ${formData.get("motivo")}`;
+  // ===============================
 
   let query = await fetch(base_url + "/TypeIncident/updateTypeIncident", {
     method: "POST",
@@ -175,6 +218,8 @@ async function updateTypeIncident(e) {
       showConfirmButton: false,
       timer: 1500,
     });
+    estadoOperacion = 1;
+    historico(tipoOperacion, descripcionOperacion, estadoOperacion);
     btnCloseEditTypeIncident.click();
     TYPEINCIDENT_TABLE.ajax.reload();
     document.querySelectorAll("input").forEach((input) => (input.value = ""));
@@ -208,25 +253,58 @@ async function modalEditTypeIncident(id) {
 }
 
 function confirmed(id) {
-  //AHORA CUANDO LE DAS AL BOTON DE BORRAR LO RECIBE AQUI
   Swal.fire({
     title: "¿Está seguro?",
-    text: "Este cambio no será reversible",
+    html: `
+      <p>Este cambio no será reversible. Por favor, especifique el motivo:</p>
+      <textarea class="border rounded p-2 col-12" id="motivoEliminar" rows="4" cols="50" placeholder="Escriba el motivo aquí"></textarea>
+    `,
     icon: "warning",
     iconColor: "#d33",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
     confirmButtonText: "Sí",
+    preConfirm: () => {
+      const motivo = document.getElementById("motivoEliminar").value;
+
+      // Validar longitud del motivo
+      if (!validator.isLength(motivo, { min: 8, max: 200 })) {
+        Swal.showValidationMessage(
+          "El motivo debe tener entre 8 y 200 caracteres."
+        );
+        return false;
+      }
+
+      // Validar caracteres permitidos en el motivo
+      if (!validator.matches(motivo, /^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9@.,\-\_\s]+$/)) {
+        Swal.showValidationMessage(
+          "El motivo contiene caracteres no permitidos."
+        );
+        return false;
+      }
+
+      // Retornar el motivo si pasa todas las validaciones
+      return motivo;
+    },
   }).then((result) => {
     if (result.isConfirmed) {
-      //SI LE DAS QUE SI LLAMA A LA FUNCION DE BORRAR QUE YA CONOCEMOS
-      cancelTypeIncident(id);
+      const motivo = result.value; // Aquí tienes el motivo validado
+      cancelTypeIncident(id, motivo);
     }
   });
 }
 
-async function cancelTypeIncident(id) {
+async function cancelTypeIncident(id, motivo) {
+  // ========================== HISTORICO ========================
+  let queryGet = await fetch(`${base_url}/TypeIncident/getTypeIncident/${id}`);
+  let dataGet = await queryGet.json();
+
+  tipoOperacion = "Eliminación";
+  descripcionOperacion = `Se Elimino: <strong>${dataGet.nombre_tipo}</strong>, Motivo: ${motivo}`;
+
+  // ==============================================================
+
   //ESTA ES LA DE BORRAR QUE YA CONOCEMOS
   let query = await fetch(`${base_url}/TypeIncident/cancelTypeIncident/${id}`);
   let { status, title, msg } = await query.json();
@@ -240,6 +318,8 @@ async function cancelTypeIncident(id) {
       showConfirmButton: false,
       timer: 1500,
     });
+    estadoOperacion = 1;
+    historico(tipoOperacion, descripcionOperacion, estadoOperacion);
     TYPEINCIDENT_TABLE.ajax.reload();
   } else {
     Swal.fire({
@@ -249,31 +329,21 @@ async function cancelTypeIncident(id) {
       showConfirmButton: false,
       timer: 1500,
     });
+    historico(tipoOperacion, descripcionOperacion, estadoOperacion);
   }
 }
 
-async function restaurarProyecto(id) {
-  let query = await fetch(`${base_url}/Project/restoreProject/${id}`);
-  let { status, title, msg } = await query.json();
+// ===================== HISTORICO DE OPERACIONES ======================
+async function historico(tipoOperacion, descripcionOperacion, estadoOperacion) {
+  const formData = new FormData();
+  formData.append("id_usuario", userId);
+  formData.append("tipoOperacion", tipoOperacion);
+  formData.append("descripcionOperacion", descripcionOperacion);
+  formData.append("estadoOperacion", estadoOperacion);
 
-  if (status) {
-    Swal.fire({
-      toast: true,
-      position: "top-end",
-      icon: "success",
-      text: "Restaurado Correctamente",
-      showConfirmButton: false,
-      timer: 1500,
-    });
-    PROYECTO_TABLE.ajax.reload();
-    PROYECTOPAPELERA_TABLE.ajax.reload();
-  } else {
-    Swal.fire({
-      icon: "error",
-      title,
-      text: msg,
-      showConfirmButton: false,
-      timer: 1500,
-    });
-  }
+  let query = await fetch(base_url + "/Settings/insertHistorico", {
+    method: "POST",
+    body: formData,
+  });
+  let data = await query.json();
 }
