@@ -1,0 +1,36 @@
+[
+  {
+    "data": [
+      {
+        "profile_id": "184",
+        "profile_id_str": "000184",
+        "customcode": "9302400018410",
+        "nationality": "V",
+        "nationality_str": "Venezolano",
+        "pin": "15740816",
+        "pin_str": "V-15740816",
+        "fullname": "LUIS MIGUEL DURAN ORIHUELA",
+        "shortname": "LUIS M. DURAN O.",
+        "firstnames": "LUIS MIGUEL",
+        "lastnames": "DURAN ORIHUELA",
+        "sex": "F",
+        "sex_str": "Femenino",
+        "type": "15",
+        "type_str": [
+          "Graduado",
+          "Administrativo"
+        ],
+        "profile_image_url": "http://api.uptos.edu.ve/directory/images/6cdd60ea0045eb7a6ec44c54d29ed402_20230329104331.jpg",
+        "status": "1",
+        "status_str": "Activo",
+        "create": "2013-05-06 13:51:08.140064",
+        "create_str": "lun 06 may 2013, 13:51pm",
+        "last_update": "2024-06-11 03:02:28.100692",
+        "last_update_str": "mar 11 jun 2024, 03:02am",
+        "home": "1",
+        "additional": "INGENIERIA EN INFORMATICA,OFICINA DE TECNOLOGIA DE INFORMACION Y COMUNICACION",
+        "ldap_account": ""
+      }
+    ]
+  }
+]

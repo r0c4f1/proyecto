@@ -1,0 +1,26 @@
+input,
+select {
+  border: none !important;
+  border-radius: 0 !important;
+  outline: none !important; /* Para remover el borde que aparece al enfocar el input */
+  border-bottom: 1px solid grey !important;
+  margin-bottom: 10px !important;
+}
+input:focus,
+select:focus,
+.dt-search:focus{
+  
+  outline: none !important;
+ 
+  
+  box-shadow: 0 4px 2px -2px rgb(174, 174, 241) !important;
+}
+.btn-close {
+  color: #ffffff; 
+  opacity: 1; 
+}
+
+
+textarea:focus{
+  box-shadow: 0 4px 2px -2px rgb(174, 174, 241) !important;
+}

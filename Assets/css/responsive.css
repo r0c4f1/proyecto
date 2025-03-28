@@ -1,0 +1,90 @@
+
+@media (max-width: 1200px) {
+  .sidebar {
+    position: sticky !important;
+    bottom: 0;
+    height: 100vh;
+    
+    display: flex;
+    justify-content: space-around;
+    padding: 0;
+  }
+  .sidebar:hover {
+    width: 100%;
+  }
+  .sidebar:active{
+    width: 100%;
+  }
+  
+  .input-box {
+    width: 100%;
+  }
+  .card-wrap {
+    flex-direction: row;
+  }
+}
+@media (max-width: 768px) {
+  .sidebar {
+    position: sticky !important;
+    bottom: 0;
+    height: 100vh;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-around;
+    padding: 0;
+    width:65px;
+  }
+  .logo {
+    height: 50px;
+    padding: 10px;
+  }
+  .img-l img {
+    margin: 8px;
+    margin-left: -2px;
+    height: 30px;
+    width: 45px;
+  }
+  .sidebar:hover {
+    width: 100%;
+  }
+  .sidebar:active{
+    width: 100%;
+  }
+  .menu {
+    flex-direction: row;
+    height: auto;
+  }
+  .menu li {
+    margin: 0;
+  }
+  
+  .input-box {
+    width: 100%;
+  }
+  .card-wrap {
+    flex-direction: row;
+  }
+  .card-one {
+    width: 48%;
+    height: 200px;
+  }
+}
+@media (max-width: 480px) {
+  .header-title span,
+  .header-title h2 {
+    font-size: 1.2rem;
+  }
+  .username h5 {
+    font-size: 1rem;
+  }
+  .card-one {
+    height: auto;
+    padding: 0.5rem;
+  }
+  .card-inf-value {
+    font-size: 20px;
+  }
+  .card-detail {
+    font-size: 16px;
+  }
+}

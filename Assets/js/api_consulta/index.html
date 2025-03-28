@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<title>api 1.7.7</title>		
+		<script src="jquery-1.8.0.js" type="text/javascript"></script>		
+		<script type="text/javascript">
+		  async function fetch(point, params, method) {
+		  	const url_api = 'http://api.uptos.edu.ve/1.7.7';
+			const service_point =`${url_api}${point}`;
+
+			return $.ajax({
+				url: service_point,				
+				type: method || 'POST',
+				data: params,				
+				error: function(response, t) { 					
+					let data = {};
+					if(response.contentType == 'application/json') {
+						// console.log(response.responseText);
+						data = $.parseJSON(response.responseText);
+					}
+					return data;					
+				},
+				success: function(plain, status, response) {
+					let data = {};
+					if(response.contentType == 'application/json') {						
+						data = $.parseJSON(response.responseText);
+					}
+					return data;					
+				}				
+			});
+		}
+		(async()=>{
+			const params = {
+			pin:'15740816', /* datos a consultar 16818597 13942458 15934877 16701874  */
+			token:'123ssss'
+			}		
+			const resp = await fetch('/directory/search_person.json', params, 'GET')
+			console.log(resp)			
+		})();
+		/*http://api.uptos.edu.ve/1.7.7/directory/search_person.json?pin=30508322&token=123*/
+		</script>
+	</head>	
+</html>		

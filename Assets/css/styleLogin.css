@@ -1,0 +1,343 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background: linear-gradient(360deg, #1e3c72, #2a5298, #6dd5ed);
+  overflow: hidden;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Espacio entre el logo y el cintillo */
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 110px;
+  background-color: #fff;
+  z-index: 100;
+}
+
+.nav-logo img {
+  margin-left: 15px;
+  height: 90px;
+  width: auto; /* Mantén las proporciones del logo */
+}
+
+.cintillo {
+  flex-grow: 1;
+  height: 100px;
+  background: url("../images/cintillo.jpg") no-repeat center;
+  background-size: contain; /* Escala la imagen correctamente */
+  background-position: center; /* Centra la imagen dentro del contenedor */
+}
+
+
+.btn:hover {
+  background: rgba(40, 69, 231, 0.548);
+  color: #fff;
+}
+.title {
+  position: relative;
+  text-align: center; /* Centra el texto horizontalmente */
+  margin-top: 90px; /* Espaciado desde el contenido superior */
+  margin-left: -119px; /* Ajusta la alineación horizontal */
+  color: #ffffff; /* Color llamativo para destacar */
+  
+  font-weight: 500; /* Hace el texto más audaz */
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.829); /* Sombra para efecto vistoso */
+  letter-spacing: 1.5px; /* Espaciado entre letras para elegancia */
+}
+
+.container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 600px;
+  height: 620px;
+  overflow: hidden;
+}
+
+
+button:disabled {
+  background-color: #4b4b4b;
+}
+
+.login-container {
+ 
+  position: absolute;
+  left: 80px;
+  width: 550px;
+  display: flex;
+  flex-direction: column;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -webkit-moz-appearance: textfield;
+}
+
+.top {
+  color: #fff;
+  font-size: 25px;
+  text-align: center;
+  /* padding: 10px 0px 18px 0; */
+  margin-left: -119px;
+  margin-top: 25px;
+}
+
+.input-field {
+  font-size: 15px;
+  background: rgba(255, 255, 255, 0.315);
+  color: #fff;
+  height: 50px;
+  width: 100%;
+  padding: 0 10px 0 45px;
+  border: 1px solid #fff;
+  border-radius: 30px;
+  outline: none;
+  transition: 0.2s ease;
+}
+.input-container input {
+  padding-right: 10px;
+}
+.input-container {
+  position: relative;
+}
+.input-container .toggle-password {
+  position: absolute;
+  right: 15px;
+  top: 35%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.input-field:hover,
+.input-field:focus {
+  background: rgba(0, 101, 253, 0.2);
+}
+
+::-webkit-input-placeholder {
+  color: #fff;
+  font-weight: 500;
+}
+
+.input-box i {
+  position: relative;
+  top: -35px;
+  left: 17px;
+  color: #fff;
+}
+
+.submit {
+  font-size: 15px;
+  font-weight: 500;
+  color: black;
+  height: 45px;
+  width: 100%;
+  border: none;
+  border-radius: 30px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.87);
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+
+.submit:hover {
+  background: rgba(30, 52, 255, 0.849);
+  box-shadow: 1px 5px 7px 1px rgba(0, 0, 0, 0.2);
+  color: #fff;
+}
+
+@media only screen and (max-width: 768px) {
+  .wrapper {
+    min-height: 90vh;
+  }
+
+  .nav {
+    height: 80px;
+    line-height: 80px;
+  }
+
+  .nav-logo img {
+    height: 50px;
+    width: 70px;
+  }
+
+  .container {
+    width: 400px;
+    height: 500px;
+  }
+
+  .login-container {
+    width: 400px;
+  }
+
+  .input-field {
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .submit {
+    height: 40px;
+    font-size: 14px;
+  }
+}
+
+/* Mobile styles (max-width: 480px) */
+@media only screen and (max-width: 480px) {
+  .wrapper {
+    min-height: 80vh;
+  }
+
+  .nav {
+    height: 60px;
+    line-height: 60px;
+  }
+
+  .nav-logo img {
+    height: 30px;
+    width: 50px;
+  }
+
+  .container {
+    width: 300px;
+    height: 250px;
+  }
+
+  .login-container {
+    width: 300px;
+  }
+
+  .input-field {
+    height: 35px;
+    font-size: 12px;
+  }
+
+  .submit {
+    height: 35px;
+    font-size: 12px;
+  }
+}
+
+@media only screen and (max-width: 786px) {
+  .nav-button {
+    display: none;
+  }
+
+  .nav-menu.responsive {
+    top: 100px;
+  }
+
+  .nav-menu {
+    position: absolute;
+    top: -800px;
+    display: flex;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    width: 100%;
+    height: 90vh;
+    backdrop-filter: blur(20px);
+    transition: 0.3s;
+  }
+
+  .nav-menu ul {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .nav-menu-btn {
+    display: block;
+  }
+
+  .nav-menu-btn i {
+    font-size: 25px;
+    color: #fff;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .nav-menu-btn i:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .modal-contenido {
+    width: 75%;
+    height: fit-content;
+  }
+}
+
+@media only screen and (max-width: 540px) {
+  .wrapper {
+    min-height: 100vh;
+  }
+
+  .form-box {
+    width: 100%;
+    height: 500px;
+  }
+
+  .login-container {
+    width: 100%;
+    padding: 0 20px;
+  }
+
+  .input-field {
+    height: 35px;
+  }
+
+  .input-box i {
+    position: relative;
+    top: -29px;
+    left: 15px;
+    color: #fff;
+  }
+
+  .input-field {
+    height: 35px;
+    font-size: 12px;
+  }
+
+  .submit {
+    height: 35px;
+    font-size: 12px;
+  }
+}
+@media (max-width: 768px) {
+  .nav {
+      /* Permite que los elementos ocupen varias líneas si es necesario */
+      height: auto; /* Ajusta la altura automáticamente */
+  }
+
+  .cintillo {
+      width: 100%; /* Haz que ocupe todo el ancho */
+      height: 80px; /* Ajusta la altura */
+  }
+
+  .nav-logo img {
+      height: 60px; /* Reduce el tamaño del logo */
+  }
+}
+
