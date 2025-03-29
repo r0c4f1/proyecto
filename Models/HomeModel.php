@@ -137,7 +137,7 @@ class HomeModel extends Mysql
 		$sql = "SELECT i.*, a.estado, a.fecha_asignacion, e.nombre_equipo FROM incidencias i 
 				INNER JOIN asignacion a ON i.id_asignacion = a.id_asignacion
 				INNER JOIN equipo e ON e.id_equipo = a.id_equipo
-				WHERE MONTH(fecha_reporte) = $mes AND i.id_asignacion != 0";
+				WHERE MONTH(fecha_reporte) = $mes AND i.id_asignacion != 0 AND a.tipo_asignacion = 1";
 
 		$request = $this->select_all($sql);
 
