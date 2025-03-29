@@ -56,6 +56,14 @@ class Poa extends Controllers{
         }
     }
 
+    public  function getDinamicGoalsAlert(){
+        if($_GET){
+            $requestUser = $this->model->selectDinamicGoalsAlert();
+    
+            echo json_encode($requestUser, JSON_UNESCAPED_UNICODE);
+        }
+    }
+
     public  function getDinamicGoalsForzada($id){ // mal optimizado forzado por la hora
         if($_GET){
             $requestUser = $this->model->selectDinamicGoalsForzada($id);

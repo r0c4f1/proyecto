@@ -3,6 +3,31 @@ sideBar();
 
 ?>
 
+<style>
+.team-section {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.team-section.show {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #6c757d;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+</style>
+
 
 <div class="main">
     <div class="header-wrap">
@@ -22,28 +47,42 @@ sideBar();
         <div class="card-wrap d-flex justify-content-evenly align-items-center" style="display:flex; flex-wrap:wrap;">
             <h3 class="main-title mb-2" style="width:100%;">Información</h3>
 
+            <?php if($_SESSION["nivel"] >= 1) { ?>
             <div class="visually-hidden d-flex flex-column justify-content-center align-items-center mb-5" id="chart1">
                 <h4 class="main-title" style="letter-spacing: 2px; font-size: 20px; text-align: center;">Hombres y
                     Mujeres</h4>
                 <canvas id="myChart"></canvas>
             </div>
+            <?php } ?>
+
+            <?php if($_SESSION["nivel"] >= 1) { ?>
             <div class="visually-hidden d-flex flex-column justify-content-center align-items-center mb-5" id="chart2">
                 <h4 class="main-title" style="letter-spacing: 2px; font-size: 20px; text-align: center;">Proyectos</h4>
                 <canvas id="myChart2"></canvas>
             </div>
+            <?php } ?>
 
-            <?php if($_SESSION["nivel"] >= 1) { ?>
+            <?php if($_SESSION["nivel"] < 1) { ?>
+            <div class="visually-hidden d-flex flex-column justify-content-center align-items-center mb-5" id="chart10">
+                <h4 class="main-title" style="letter-spacing: 2px; font-size: 20px; text-align: center;">Proyectos por
+                    usuario</h4>
+                <canvas id="myChart10"></canvas>
+            </div>
+            <?php } ?>
+            <?php if($_SESSION["nivel"] < 1) { ?>
             <div class="visually-hidden d-flex flex-column justify-content-center align-items-center mb-5" id="chart3">
                 <h4 class="main-title" style="letter-spacing: 2px; font-size: 20px; text-align: center;">Incidencias Por
                     Usuario</h4>
                 <canvas id="myChart3"></canvas>
             </div>
             <?php } ?>
+            <?php if($_SESSION["nivel"] >= 1) { ?>
             <div class="visually-hidden d-flex flex-column justify-content-center align-items-center mb-5" id="chart4">
                 <h4 class="main-title" style="letter-spacing: 2px; font-size: 20px; text-align: center;">Incidencias
                     totales</h4>
                 <canvas id="myChart4">1234</canvas>
             </div>
+            <?php } ?>
         </div>
     </div>
 
@@ -66,6 +105,7 @@ sideBar();
                 </span>
             </div>
 
+            <?php if($_SESSION["nivel"] >= 1) { ?>
             <div class="card-one shadow bg-white pointer border border-primary"
                 onclick="alertaEquipoConMasIncidenciasCompletadas()">
                 <div class="card-header">
@@ -80,7 +120,6 @@ sideBar();
                     <p id="teamTopIncidents"></p>
                 </span>
             </div>
-            <?php if($_SESSION["nivel"] >= 1) { ?>
 
             <div class="card-one shadow bg-white pointer border border-primary"
                 onclick="alertaPorcentajeCapacitaciones()">

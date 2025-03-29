@@ -37,14 +37,33 @@ class Home extends Controllers{
         }
     }
 
+    
+    public function getProjectIndicatorPerProject($idUsuario) {
+        if ($_GET) {
+            $requestUser = $this->model->selectProjectPerUserIndicator($idUsuario);
+
+            echo json_encode($requestUser, JSON_UNESCAPED_UNICODE);
+        }
+    }
+
     public function getProjectStates($id_proyecto = null) {
         if ($_GET) {
-            $id_proyecto = $_GET['id_proyecto'] ?? null;
+            
             $requestUser = $this->model->selectProjectStates($id_proyecto);
     
             echo json_encode($requestUser, JSON_UNESCAPED_UNICODE);
         }
     }
+
+       public function getProjectPerUserStates($id_proyecto = null) {
+        if ($_GET) {
+            
+            $requestUser = $this->model->selectProjectPerUserStates($id_proyecto);
+    
+            echo json_encode($requestUser, JSON_UNESCAPED_UNICODE);
+        }
+    }
+
 
     public function getProjectPerTeams() {
         if ($_GET) {
@@ -273,6 +292,14 @@ class Home extends Controllers{
       public function getMantenimientoVarianceYear(){
         if ($_GET) {
             $requestUser = $this->model->selectMantenimientoVarianceYear();
+
+            echo json_encode($requestUser, JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+    public function getMonthIncident($mes){
+        if ($_GET) {
+            $requestUser = $this->model->selectMonthIncident($mes);
 
             echo json_encode($requestUser, JSON_UNESCAPED_UNICODE);
         }

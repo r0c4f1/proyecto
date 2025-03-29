@@ -85,7 +85,7 @@
 			 // 1. Insertar en tabla asignacion (igual para proyectos)
     		$sqlAsignacion = "INSERT INTO asignacion (id_equipo, fecha_asignacion, estado, status, tipo_asignacion) 
     		                  VALUES (?,?,?,?,?)";
-    		$arrDataAsignacion = array($id_equipo, $fecha_asignacion, $estado, 1, 1);
+    		$arrDataAsignacion = array($id_equipo, $fecha_asignacion, $estado, 1, 0);
     		$id_asignacion = $this->insert($sqlAsignacion, $arrDataAsignacion);
 
     		// 2. Actualizar la tabla PROYECTO (en lugar de incidencias)

@@ -87,10 +87,15 @@ class ResourcesModel extends Mysql
 		return $request;
 	}
 
-
-
-
-
+	public function selectRecycledResource()
+	{
+		$sql = "SELECT r.nombre, rr.cantidad 
+		FROM `recursos_reciclados` rr INNER JOIN recursos r 
+		ON rr.id_recurso = r.id_recurso";
+		$request = $this->select_all($sql);
+	
+		return $request;
+	}
 
 	public function insertTest($item_1, $item_2, $item_3, $item_4, $item_5)
 	{

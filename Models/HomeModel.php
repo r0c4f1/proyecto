@@ -29,20 +29,68 @@ class HomeModel extends Mysql
 	public function selectProjectStates($id_proyecto = null)
 	{
 		$sql = "SELECT p.id_proyecto, p.nombre, 
-p.descripcion, p.fecha_inicio, 
-p.fecha_fin, a.estado, e.nombre_equipo 
-FROM proyecto p 
-INNER JOIN asignacion a ON a.id_asignacion = p.id_asignacion 
-INNER JOIN equipo e ON e.id_equipo = a.id_equipo 
-WHERE a.status = 1;";
+				p.descripcion, p.fecha_inicio, 
+				p.fecha_fin, a.estado, e.nombre_equipo 
+				FROM proyecto p 
+				INNER JOIN asignacion a ON a.id_asignacion = p.id_asignacion 
+				INNER JOIN equipo e ON e.id_equipo = a.id_equipo 
+				WHERE a.status = 1;";
 
 		if ($id_proyecto) {
 			$sql .= " AND p.id_proyecto = '$id_proyecto'"; // Incluyendo el nombre directamente
 		}
 
-		return $this->select_all($sql); // Asumiendo que estás usando select_all()
+		$arrData =  $this->select_all($sql); 
+		
+		$sqlUsuario = "SELECT u.* FROM proyecto p
+				INNER JOIN asignacion_equipo ae ON ae.id_asignacion = p.id_asignacion
+				INNER JOIN equipo_usuario eu ON ae.id_equipo = eu.id_equipo
+				INNER JOIN usuario u ON eu.id_usuario = u.id_usuario
+				WHERE ae.id_equipo = eu.id_equipo  AND p.id_proyecto = '$id_proyecto';";
+
+		$dataUsuario = $this->select_all($sqlUsuario);
+
+		for ($i=0; $i < count($arrData); $i++) { 
+			$arrData[$i]['datosUsuariosEquipo'] = $dataUsuario;
+		}
+
+		return $arrData;
+
 	}
 
+		public function selectProjectPerUserStates($id_proyecto = null)
+	{
+		$idUsuario = $_SESSION['id_usuario'];
+		$sql = "SELECT p.id_proyecto, p.nombre, 
+				p.descripcion, p.fecha_inicio, 
+				p.fecha_fin, a.estado, e.nombre_equipo 
+				FROM proyecto p 
+				INNER JOIN asignacion a ON a.id_asignacion = p.id_asignacion 
+				INNER JOIN equipo e ON e.id_equipo = a.id_equipo 
+				INNER JOIN equipo_usuario eu ON e.id_equipo = eu.id_equipo 
+				WHERE a.status = 1 AND eu.id_usuario = $idUsuario;";
+
+		if ($id_proyecto) {
+			$sql .= " AND p.id_proyecto = '$id_proyecto'"; // Incluyendo el nombre directamente
+		}
+
+		$arrData =  $this->select_all($sql); 
+		
+		$sqlUsuario = "SELECT u.* FROM proyecto p
+				INNER JOIN asignacion_equipo ae ON ae.id_asignacion = p.id_asignacion
+				INNER JOIN equipo_usuario eu ON ae.id_equipo = eu.id_equipo
+				INNER JOIN usuario u ON eu.id_usuario = u.id_usuario
+				WHERE ae.id_equipo = eu.id_equipo  AND p.id_proyecto = '$id_proyecto';";
+
+		$dataUsuario = $this->select_all($sqlUsuario);
+
+		for ($i=0; $i < count($arrData); $i++) { 
+			$arrData[$i]['datosUsuariosEquipo'] = $dataUsuario;
+		}
+
+		return $arrData;
+
+	}
 
 
 	// public function selectProjectPerTeams(){
@@ -68,7 +116,28 @@ WHERE a.status = 1;";
 	public function selectTasksPerUserIndicator($userId)
 	{
 		$sql = "SELECT a.id_asignacion, a.estado, COUNT(a.id_asignacion) AS cantidad FROM asignacion a 
-			INNER JOIN equipo_usuario eu ON a.id_equipo = eu.id_equipo WHERE eu.id_usuario = $userId GROUP BY estado";
+			INNER JOIN equipo_usuario eu ON a.id_equipo = eu.id_equipo WHERE eu.id_usuario = $userId AND eu.tipo_equipo = 1 GROUP BY estado";
+
+		$request = $this->select_all($sql);
+
+		return $request;
+	}
+
+	public function selectProjectPerUserIndicator($userId)
+	{
+		$sql = "SELECT a.id_asignacion, a.estado, COUNT(a.id_asignacion) AS cantidad FROM asignacion a 
+			INNER JOIN equipo_usuario eu ON a.id_equipo = eu.id_equipo WHERE eu.id_usuario = $userId AND eu.tipo_equipo = 0 GROUP BY estado";
+
+		$request = $this->select_all($sql);
+
+		return $request;
+	}
+
+	public function selectMonthIncident($mes) {
+		$sql = "SELECT i.*, a.estado, a.fecha_asignacion, e.nombre_equipo FROM incidencias i 
+				INNER JOIN asignacion a ON i.id_asignacion = a.id_asignacion
+				INNER JOIN equipo e ON e.id_equipo = a.id_equipo
+				WHERE MONTH(fecha_reporte) = $mes AND i.id_asignacion != 0";
 
 		$request = $this->select_all($sql);
 

@@ -123,7 +123,100 @@ async function modalAddGoals() {
 // ================ AL CARGAR LA PAGINA ==========================================
 document.addEventListener("DOMContentLoaded", function () {
   llenarCards();
+  hola();
 });
+async function hola() {
+  try {
+    let query = await fetch(`${base_url}/Poa/getDinamicGoalsAlert`);
+    let data = await query.json();
+
+    console.log(data); // Verifica la estructura de los datos en la consola
+
+    // Filtrar metas con progreso menor al 90%
+    const hoy = new Date();
+    const metasPendientes = data.filter((item) => {
+      const porcentaje =
+        (item.cantidad_progreso / item.cantidad_objetivo) * 100;
+      return porcentaje < 90; // Solo metas con progreso menor al 90%
+    });
+
+    if (metasPendientes.length > 0) {
+      // Si hay metas pendientes, calcular tiempo restante y generar mensajes personalizados
+      const mensajes = metasPendientes.map((item) => {
+        const fechaLimite = new Date(item.fecha_limite);
+        const diferenciaMilisegundos = fechaLimite - hoy;
+        const diferenciaDias = Math.floor(
+          diferenciaMilisegundos / (1000 * 60 * 60 * 24)
+        );
+        const diferenciaHoras = Math.floor(
+          (diferenciaMilisegundos % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        );
+
+        const porcentaje =
+          (item.cantidad_progreso / item.cantidad_objetivo) * 100;
+
+        // Determinar el consejo basado en el porcentaje y el id_metas
+        let consejo = "";
+        if (porcentaje < 30) {
+          // Mensaje urgente según el id_metas
+          if (item.id_metas === 1)
+            consejo = "<b>Urgente:</b> Revisa reparaciones.";
+          if (item.id_metas === 2)
+            consejo = "<b>Urgente:</b> Revisa incidencias.";
+          if (item.id_metas === 3)
+            consejo = "<b>Urgente:</b> Revisa proyectos.";
+          if (item.id_metas === 4)
+            consejo = "<b>Urgente:</b> Revisa capacitaciones.";
+          if (item.id_metas === 5) consejo = "<b>Urgente:</b> Revisa personal.";
+        } else if (porcentaje >= 30 && porcentaje < 90) {
+          // Mensaje regular según el id_metas
+          if (item.id_metas === 1)
+            consejo = "<b>Consejo:</b> Revisa reparaciones.";
+          if (item.id_metas === 2)
+            consejo = "<b>Consejo:</b> Revisa incidencias.";
+          if (item.id_metas === 3)
+            consejo = "<b>Consejo:</b> Revisa proyectos.";
+          if (item.id_metas === 4)
+            consejo = "<b>Consejo:</b> Revisa capacitaciones.";
+          if (item.id_metas === 5) consejo = "<b>Consejo:</b> Revisa personal.";
+        }
+
+        // Formatear el mensaje según los días o horas restantes
+        if (diferenciaDias > 0) {
+          return `Quedan ${diferenciaDias} días para la meta "${item.nombre_meta}". ${consejo}`;
+        } else {
+          return `Quedan ${diferenciaHoras} horas para la meta "${item.nombre_meta}". ${consejo}`;
+        }
+      });
+
+      // Mostrar los mensajes en la alerta
+      Swal.fire({
+        title: "Metas Dinámicas",
+        html: mensajes.join("<br><br>"), // Usar <br> para saltos de línea
+        icon: "info",
+        confirmButtonText: "Cerrar",
+      });
+    } else {
+      // Si todo está bien, mostrar un mensaje indicando que todo va bien
+      Swal.fire({
+        title: "Todo en orden",
+        text: "Todas tus metas están por encima del 90% de progreso. ¡Buen trabajo!",
+        icon: "success",
+        confirmButtonText: "Cerrar",
+      });
+    }
+  } catch (error) {
+    console.error("Error al obtener las metas dinámicas:", error);
+
+    // Mostrar alerta de error si algo falla
+    Swal.fire({
+      title: "Error",
+      text: "No se pudieron obtener las metas dinámicas.",
+      icon: "error",
+      confirmButtonText: "Intentar de nuevo",
+    });
+  }
+}
 
 function llenarCards() {
   ContenedorCard.innerHTML = "";

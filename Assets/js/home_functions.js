@@ -1,3 +1,118 @@
+const IncidenciasPendientesTable = new DataTable("#tablePendientes", {
+  layout: {
+    topEnd: false,
+    topStart: {
+      search: {
+        placeholder: "Buscar",
+      },
+    },
+  },
+  language: {
+    url: `${base_url}/Assets/js/plugins/datatables/es-ES.json`,
+  },
+  columns: [
+    {
+      data: "reportado_por",
+    },
+    {
+      data: "fecha_reporte",
+    },
+    {
+      data: "fecha_asignacion",
+    },
+    {
+      data: "descripcion",
+    },
+    {
+      data: "nombre_equipo",
+    },
+  ],
+  // dom: "lfrtip",
+  paging: true,
+  responsive: true,
+  iDisplayLength: 10,
+  order: [[0, "desc"]],
+});
+const IncidenciasEnProcesoTable = new DataTable("#tableEnProceso", {
+  layout: {
+    topEnd: false,
+    topStart: {
+      search: {
+        placeholder: "Buscar",
+      },
+    },
+  },
+  language: {
+    url: `${base_url}/Assets/js/plugins/datatables/es-ES.json`,
+  },
+  columns: [
+    {
+      data: "reportado_por",
+    },
+    {
+      data: "fecha_reporte",
+    },
+    {
+      data: "fecha_asignacion",
+    },
+    {
+      data: "fecha_inicio",
+    },
+    {
+      data: "descripcion",
+    },
+    {
+      data: "nombre_equipo",
+    },
+  ],
+  // dom: "lfrtip",
+  paging: true,
+  responsive: true,
+  iDisplayLength: 10,
+  order: [[0, "desc"]],
+});
+const IncidenciasFinalizadasTable = new DataTable("#tableFinalizadas", {
+  layout: {
+    topEnd: false,
+    topStart: {
+      search: {
+        placeholder: "Buscar",
+      },
+    },
+  },
+  language: {
+    url: `${base_url}/Assets/js/plugins/datatables/es-ES.json`,
+  },
+  columns: [
+    {
+      data: "reportado_por",
+    },
+    {
+      data: "fecha_reporte",
+    },
+    {
+      data: "fecha_asignacion",
+    },
+    {
+      data: "fecha_inicio",
+    },
+    {
+      data: "fecha_solucion",
+    },
+    {
+      data: "descripcion",
+    },
+    {
+      data: "nombre_equipo",
+    },
+  ],
+  // dom: "lfrtip",
+  paging: true,
+  responsive: true,
+  iDisplayLength: 10,
+  order: [[0, "desc"]],
+});
+
 const ctx = document.getElementById("myChart");
 const ctx2 = document.getElementById("myChart2");
 const ctx3 = document.getElementById("myChart3");
@@ -7,6 +122,7 @@ const ctx6 = document.getElementById("myChart6");
 const ctx7 = document.getElementById("myChart7");
 const ctx8 = document.getElementById("myChart8");
 const ctx9 = document.getElementById("myChart9");
+const ctx10 = document.getElementById("myChart10");
 
 // VARIABLES GLOBALES
 let datosFiltro = [];
@@ -27,68 +143,71 @@ let filaIndicadorProyecto = document.getElementById("filaIndicadorProyecto");
 let avgTraining = document.getElementById("avgTraining");
 
 function estadisticas(labels, data, element, type, label, fn) {
-  const miChart = new Chart(element, {
-    type,
-    data: {
-      labels,
-      datasets: [
-        {
-          label,
-          data,
-          borderWidth: 2,
-          backgroundColor: [
-            "rgb(220, 53, 69)", // Color para la primera barra
-            "rgb(0, 123, 255)", // Color para la segunda barra
-            "rgb(40, 167, 69)", // Color para la tercera barra
-            "rgb(255, 193, 7)", // Color para la cuarta barra
-          ],
-          spacing: 0.5,
-        },
-      ],
-    },
-    options: {
-      scales: {
-        y: {
-          ticks: {
-            display: false, // Oculta las etiquetas del eje Y
+  let miChart = "";
+  if (element && element.offsetParent !== null) {
+    miChart = new Chart(element, {
+      type,
+      data: {
+        labels,
+        datasets: [
+          {
+            label,
+            data,
+            borderWidth: 2,
+            backgroundColor: [
+              "rgb(220, 53, 69)", // Color para la primera barra
+              "rgb(0, 123, 255)", // Color para la segunda barra
+              "rgb(40, 167, 69)", // Color para la tercera barra
+              "rgb(255, 193, 7)", // Color para la cuarta barra
+            ],
+            spacing: 0.5,
           },
-          grid: {
-            display: false, // Oculta las líneas de la cuadrícula del eje Y
-            drawBorder: false,
-          },
-        },
-        x: {
-          ticks: {
-            display: false, // Oculta las etiquetas del eje X
-          },
-          grid: {
-            drawOnChartArea: false,
-            drawTicks: false,
-          },
-        },
+        ],
       },
-      plugins: {
-        title: {
-          display: false,
-        },
-        legend: {
-          labels: {
-            font: {
-              size: 12, // Aumentar el tamaño de la fuente en la leyenda
+      options: {
+        scales: {
+          y: {
+            ticks: {
+              display: false, // Oculta las etiquetas del eje Y
+            },
+            grid: {
+              display: false, // Oculta las líneas de la cuadrícula del eje Y
+              drawBorder: false,
+            },
+          },
+          x: {
+            ticks: {
+              display: false, // Oculta las etiquetas del eje X
+            },
+            grid: {
+              drawOnChartArea: false,
+              drawTicks: false,
             },
           },
         },
-        tooltip: {
-          bodyFont: {
-            size: 12, // Aumentar el tamaño de la fuente en los tooltips
+        plugins: {
+          title: {
+            display: false,
           },
-          titleFont: {
-            size: 12, // Aumentar el tamaño de la fuente en el título de los tooltips
+          legend: {
+            labels: {
+              font: {
+                size: 12, // Aumentar el tamaño de la fuente en la leyenda
+              },
+            },
+          },
+          tooltip: {
+            bodyFont: {
+              size: 12, // Aumentar el tamaño de la fuente en los tooltips
+            },
+            titleFont: {
+              size: 12, // Aumentar el tamaño de la fuente en el título de los tooltips
+            },
           },
         },
       },
-    },
-  });
+    });
+  }
   if (element && element.offsetParent !== null) {
     element.addEventListener("click", (event) => {
       const puntos = miChart.getElementsAtEventForMode(
@@ -279,7 +398,14 @@ async function manejador(etiqueta, valor) {
 
 async function manejadorProyecto(etiqueta, valor) {
   // ----- OBTIENE LOS PROYECTOS POR TITULO Y SU PROGRESO -----
-  let queryProjectStates = await fetch(`${base_url}/Home/getProjectStates`);
+  let queryProjectStates = "";
+  if (userLevel >= 1) {
+    queryProjectStates = await fetch(`${base_url}/Home/getProjectStates`);
+  } else {
+    queryProjectStates = await fetch(
+      `${base_url}/Home/getProjectPerUserStates`
+    );
+  }
   let dataProjectStates = await queryProjectStates.json();
 
   datosFiltro.push(...dataProjectStates);
@@ -300,23 +426,43 @@ async function manejadorProyecto(etiqueta, valor) {
       estadoClass = "text-success"; // Clase para "success"
     }
 
-    card += `
-    <div class="d-flex">
-      <ul class="col-4 pointer">
-      <li class="list-group-item fw-bold mb-1" onclick="descripcionProyecto(${dataProjectStates[i].id_proyecto}, '${dataProjectStates[i].nombre}')">
-  <small>${dataProjectStates[i].nombre}</small>
-</li>
-      </ul>
-
-      <ul class="col-4 text-center">
-        <li class="list-group-item fw-bold mb-1 ${estadoClass}">${dataProjectStates[i].estado}</li>
-      </ul>
-
-      <ul class="col-4 text-center">
-        <li class="list-group-item fw-bold mb-1"><small>${dataProjectStates[i].nombre_equipo}</small></li>
-      </ul>
-    </div>
-    `;
+    if (userLevel >= 1) {
+      card += `
+      <div class="d-flex">
+        <ul class="col-4 pointer">
+        <li class="list-group-item fw-bold mb-1" onclick="descripcionProyecto(${dataProjectStates[i].id_proyecto}, '${dataProjectStates[i].nombre}')">
+    <small>${dataProjectStates[i].nombre}</small>
+  </li>
+        </ul>
+  
+        <ul class="col-4 text-center">
+          <li class="list-group-item fw-bold mb-1 ${estadoClass}">${dataProjectStates[i].estado}</li>
+        </ul>
+  
+        <ul class="col-4 text-center">
+          <li class="list-group-item fw-bold mb-1"><small>${dataProjectStates[i].nombre_equipo}</small></li>
+        </ul>
+      </div>
+      `;
+    } else {
+      card += `
+      <div class="d-flex">
+        <ul class="col-4 pointer">
+        <li class="list-group-item fw-bold mb-1" onclick="descripcionProyectoPorMes(${dataProjectStates[i].id_proyecto}, '${dataProjectStates[i].nombre}')">
+    <small>${dataProjectStates[i].nombre}</small>
+  </li>
+        </ul>
+  
+        <ul class="col-4 text-center">
+          <li class="list-group-item fw-bold mb-1 ${estadoClass}">${dataProjectStates[i].estado}</li>
+        </ul>
+  
+        <ul class="col-4 text-center">
+          <li class="list-group-item fw-bold mb-1"><small>${dataProjectStates[i].nombre_equipo}</small></li>
+        </ul>
+      </div>
+      `;
+    }
   }
 
   filaIndicadorProyecto.innerHTML = card;
@@ -334,22 +480,212 @@ async function descripcionProyecto(id_proyecto, nombre) {
   console.log("Datos del servidor:", dataProject);
 
   const project = dataProject.find((p) => p.id_proyecto === id_proyecto);
+  let miembrosEquipo = "";
 
-  let card = `
-  <div>
-  
-      <h4 class="d-flex justify-content-start">Descripción del Proyecto</h4>
-      <p class="border rounded">${project.descripcion}</p>
-      <h6 class="d-flex justify-content-start">Fecha Inicio: ${project.fecha_inicio}</h6>
-  <h6 class="d-flex justify-content-start">Fecha Final: ${project.fecha_fin}</h6>
+  for (let i = 0; i < project.datosUsuariosEquipo.length; i++) {
+    const el = project.datosUsuariosEquipo[i];
+    let nombre = el.nombres.split(" ")[0];
+    let apellido = el.apellidos.split(" ")[0];
+
+    let avatar = `${nombre[0]}${apellido[0]}`;
+
+    miembrosEquipo += ` <div class="d-flex align-items-center p-2 border rounded mb-2">
+            <div class="avatar rounded me-3">${avatar}</div>
+            <div>
+              <p class="mb-0 fw-medium">${nombre} ${apellido}</p>
+              <span class="badge bg-light text-dark border w-100">${el.id_usuario}</span>
+              <span class="badge bg-light text-dark border w-100">${el.telefono}</span>
+              <span class="badge bg-light text-dark border w-100">${el.email}</span>
+            </div>
+          </div>`;
+  }
+
+  let card = /* html */ `
+  <div class="container">
+    <div class="card mx-auto" style="max-width: 500px;">
+      <div class="card-header text-center bg-white border-bottom-0 pt-4">
+        <h4 class="fw-bold text-center w-100">${project.nombre}</h4>
+        </div>
+        
+        <div class="card-body">
+        <!-- Project Description -->
+        <p class="text-muted">Descripción del Proyecto</p>
+        <div class="bg-light p-3 rounded mb-3">
+          <p class="text-center mb-0">${project.descripcion}</p>
+        </div>
+        
+        <!-- Project Dates -->
+        <div class="mb-3">
+          <div class="d-flex align-items-center mb-2">
+            <i class="bi bi-calendar me-2 text-secondary"></i>
+            <div>
+              <p class="mb-0 small fw-medium text-start">Fecha inicio:</p>
+              <p class="mb-0 fs-6">${project.fecha_inicio}</p>
+            </div>
+          </div>
+          
+          <div class="d-flex align-items-center mb-3">
+            <i class="bi bi-clock me-2 text-secondary"></i>
+            <div>
+              <p class="mb-0 small fw-medium text-start">Fecha Final:</p>
+              <p class="mb-0 text-start fs-6">${
+                project.fecha_fin === null
+                  ? "Sin fecha de finalización"
+                  : project.fecha_fin
+              }</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Team Toggle Button -->
+        <button class="btn btn-outline-secondary w-100 mb-3" id="teamToggle">
+          <i class="bi bi-people"></i> Ver Equipo
+        </button>
+        
+        <!-- Team Members Section -->
+     
+           <div class="team-section" id="teamSection">
+          <h5 class="d-flex align-items-center mb-3">
+            <i class="bi bi-people me-2"></i> Miembros del Equipo
+          </h5>
+          
+          <!-- Team Member 1 -->
+          ${miembrosEquipo}
+          
+      
+        </div>
+         
+      </div>
+      
+    </div>
   </div>
 `;
 
   Swal.fire({
-    title: nombre,
     html: card,
     confirmButtonText: "Cerrar",
     confirmButtonColor: "#6c757d",
+  });
+  document.getElementById("teamToggle").addEventListener("click", function () {
+    const teamSection = document.getElementById("teamSection");
+    const button = document.getElementById("teamToggle");
+
+    teamSection.classList.toggle("show");
+
+    if (teamSection.classList.contains("show")) {
+      button.innerHTML = '<i class="bi bi-people me-2"></i> Ocultar Equipo';
+    } else {
+      button.innerHTML = '<i class="bi bi-people me-2"></i> Ver Equipo';
+    }
+  });
+}
+
+async function descripcionProyectoPorMes(id_proyecto, nombre) {
+  let queryProject = await fetch(
+    `${base_url}/Home/getProjectPerUserStates/${id_proyecto}`
+  );
+  let dataProject = await queryProject.json();
+
+  console.log("Datos del servidor:", dataProject);
+
+  const project = dataProject.find((p) => p.id_proyecto === id_proyecto);
+  let miembrosEquipo = "";
+
+  for (let i = 0; i < project.datosUsuariosEquipo.length; i++) {
+    const el = project.datosUsuariosEquipo[i];
+    let nombre = el.nombres.split(" ")[0];
+    let apellido = el.apellidos.split(" ")[0];
+
+    let avatar = `${nombre[0]}${apellido[0]}`;
+
+    miembrosEquipo += ` <div class="d-flex align-items-center p-2 border rounded mb-2">
+            <div class="avatar rounded me-3">${avatar}</div>
+            <div>
+              <p class="mb-0 fw-medium">${nombre} ${apellido}</p>
+              <span class="badge bg-light text-dark border w-100">${el.id_usuario}</span>
+              <span class="badge bg-light text-dark border w-100">${el.telefono}</span>
+              <span class="badge bg-light text-dark border w-100">${el.email}</span>
+            </div>
+          </div>`;
+  }
+
+  let card = /* html */ `
+  <div class="container">
+    <div class="card mx-auto" style="max-width: 500px;">
+      <div class="card-header text-center bg-white border-bottom-0 pt-4">
+        <h4 class="fw-bold text-center w-100">${project.nombre}</h4>
+        </div>
+        
+        <div class="card-body">
+        <!-- Project Description -->
+        <p class="text-muted">Descripción del Proyecto</p>
+        <div class="bg-light p-3 rounded mb-3">
+          <p class="text-center mb-0">${project.descripcion}</p>
+        </div>
+        
+        <!-- Project Dates -->
+        <div class="mb-3">
+          <div class="d-flex align-items-center mb-2">
+            <i class="bi bi-calendar me-2 text-secondary"></i>
+            <div>
+              <p class="mb-0 small fw-medium text-start">Fecha inicio:</p>
+              <p class="mb-0 fs-6">${project.fecha_inicio}</p>
+            </div>
+          </div>
+          
+          <div class="d-flex align-items-center mb-3">
+            <i class="bi bi-clock me-2 text-secondary"></i>
+            <div>
+              <p class="mb-0 small fw-medium text-start">Fecha Final:</p>
+              <p class="mb-0 text-start fs-6">${
+                project.fecha_fin === null
+                  ? "Sin fecha de finalización"
+                  : project.fecha_fin
+              }</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Team Toggle Button -->
+        <button class="btn btn-outline-secondary w-100 mb-3" id="teamToggle">
+          <i class="bi bi-people"></i> Ver Equipo
+        </button>
+        
+        <!-- Team Members Section -->
+     
+           <div class="team-section" id="teamSection">
+          <h5 class="d-flex align-items-center mb-3">
+            <i class="bi bi-people me-2"></i> Miembros del Equipo
+          </h5>
+          
+          <!-- Team Member 1 -->
+          ${miembrosEquipo}
+          
+      
+        </div>
+         
+      </div>
+      
+    </div>
+  </div>
+`;
+
+  Swal.fire({
+    html: card,
+    confirmButtonText: "Cerrar",
+    confirmButtonColor: "#6c757d",
+  });
+  document.getElementById("teamToggle").addEventListener("click", function () {
+    const teamSection = document.getElementById("teamSection");
+    const button = document.getElementById("teamToggle");
+
+    teamSection.classList.toggle("show");
+
+    if (teamSection.classList.contains("show")) {
+      button.innerHTML = '<i class="bi bi-people me-2"></i> Ocultar Equipo';
+    } else {
+      button.innerHTML = '<i class="bi bi-people me-2"></i> Ver Equipo';
+    }
   });
 }
 
@@ -521,6 +857,33 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     "Cantidad",
     manejadorProyecto
   );
+
+  // ------ grafico proyectos por usuario
+
+  let queryIndicatorProjectPerUsuario = await fetch(
+    `${base_url}/Home/getProjectIndicatorPerProject/${userId}`
+  );
+  let dataProjectPerUser = await queryIndicatorProjectPerUsuario.json();
+
+  let pendientePerUser =
+    dataProjectPerUser.find((item) => item.estado === "Pendiente")?.cantidad ||
+    0;
+  let enProcesoPerUser =
+    dataProjectPerUser.find((item) => item.estado === "En Proceso")?.cantidad ||
+    0;
+  let finalizadoPerUser =
+    dataProjectPerUser.find((item) => item.estado === "Finalizado")?.cantidad ||
+    0;
+
+  estadisticas(
+    ["Pendiente", "En Proceso", "Finalizado"],
+    [pendientePerUser, enProcesoPerUser, finalizadoPerUser],
+    ctx10,
+    "doughnut",
+    "Cantidad",
+    manejadorProyecto
+  );
+
   // ----- GRAFICOS INCIDENCIAS TOTALES
   let queryIndicatorTasksPerUser = await fetch(
     `${base_url}/Home/getTasksPerUserIndicator/${userId}`
@@ -988,7 +1351,7 @@ async function alertaPorcentajeRecursosUsados() {
     });
   } else {
     listaRecursos = `<div class="text-center">No hay recursos en uso</div>`;
-    divs += `<div class="tab-pane fade show active">${cardProyectos}</div>`;
+    divs += `<div class="tab-pane fade show active">${card}</div>`;
   }
 
   tab += "</ul>";
@@ -2731,241 +3094,250 @@ function ctx5Function(event) {
   }
 }
 
-ctx5.addEventListener("click", ctx5Function);
+if (ctx5 && ctx5.offsetParent !== null)
+  ctx5.addEventListener("click", ctx5Function);
 
-ctx6.addEventListener("click", (event) => {
-  const puntos = myChartCapacitaciones.getElementsAtEventForMode(
-    event,
-    "nearest",
-    {
-      intersect: true,
-    },
-    true
-  );
+if (ctx6 && ctx6.offsetParent !== null)
+  ctx6.addEventListener("click", (event) => {
+    const puntos = myChartCapacitaciones.getElementsAtEventForMode(
+      event,
+      "nearest",
+      {
+        intersect: true,
+      },
+      true
+    );
 
-  if (puntos.length) {
-    const puntoIndice = puntos[0].index;
-    const etiqueta = myChartCapacitaciones.data.labels[puntoIndice];
-    const valor = myChartCapacitaciones.data.datasets[0].data[puntoIndice];
+    if (puntos.length) {
+      const puntoIndice = puntos[0].index;
+      const etiqueta = myChartCapacitaciones.data.labels[puntoIndice];
+      const valor = myChartCapacitaciones.data.datasets[0].data[puntoIndice];
 
-    let indice = mesesDelAnio.indexOf(etiqueta);
-    let data = datosVarianzaCapacitaciones[indice];
+      let indice = mesesDelAnio.indexOf(etiqueta);
+      let data = datosVarianzaCapacitaciones[indice];
 
-    if (statusIdCapacitaciones === 0) {
-      data = datosVarianzaCapacitaciones[indice];
-    } else {
-      data = datosVarianzaCapacitacionesYear.filter(
-        (el) => el.año === etiqueta
-      )[0];
+      if (statusIdCapacitaciones === 0) {
+        data = datosVarianzaCapacitaciones[indice];
+      } else {
+        data = datosVarianzaCapacitacionesYear.filter(
+          (el) => el.año === etiqueta
+        )[0];
 
-      console.log(data);
-    }
+        console.log(data);
+      }
 
-    Swal.fire({
-      title: `<h4>Participación en capacitaciones (${etiqueta})</h4> <hr/>`,
-      icon: "info",
-      html: `<h5>Participación Actual: <b>${data.participacion_actual}</b></h5>
+      Swal.fire({
+        title: `<h4>Participación en capacitaciones (${etiqueta})</h4> <hr/>`,
+        icon: "info",
+        html: `<h5>Participación Actual: <b>${data.participacion_actual}</b></h5>
              <h5>Varianza Porcentual: <b>${data.tasa_variacion_porcentual}%</b></h5>`,
-      showConfirmButton: false,
-      showCancelButton: false,
-    });
+        showConfirmButton: false,
+        showCancelButton: false,
+      });
 
-    // Evento personalizado
-    // fn(etiqueta, valor);
+      // Evento personalizado
+      // fn(etiqueta, valor);
 
-    // Aquí puedes agregar más lógica o llamar a una función personalizada
-  }
-});
-
-ctx7.addEventListener("click", (event) => {
-  const puntos = myChartTiempoIncidencias.getElementsAtEventForMode(
-    event,
-    "nearest",
-    {
-      intersect: true,
-    },
-    true
-  );
-
-  if (puntos.length) {
-    const puntoIndice = puntos[0].index;
-    const etiqueta = myChartTiempoIncidencias.data.labels[puntoIndice];
-    const valor = myChartTiempoIncidencias.data.datasets[0].data[puntoIndice];
-
-    console.log(datosTiempoPromedioFinalizacionIncidencias);
-
-    let indice = mesesDelAnio.indexOf(etiqueta);
-    let data = "";
-
-    if (statusIdTiempoIncidencia === 0) {
-      data = datosTiempoPromedioFinalizacionIncidencias[indice];
-    } else {
-      data = datosTiempoPromedioFinalizacionIncidenciasYear.filter(
-        (el) => el.Año === etiqueta
-      )[0];
-
-      console.log(data);
+      // Aquí puedes agregar más lógica o llamar a una función personalizada
     }
+  });
 
-    Swal.fire({
-      title: `<h4>Promedio de tiempo de incidenicas finalizadas (${etiqueta})</h4> <hr/>`,
-      icon: "info",
-      html: `<h5>tiempo total (${
-        statusIdTiempoIncidencia === 0 ? "Mensual" : "Anual"
-      }): <b>${
-        statusIdTiempoIncidencia === 0
-          ? data.tiempo_total
-          : data.tiempo_total_solucionado
-      }</b></h5>
+if (ctx7 && ctx7.offsetParent !== null)
+  ctx7.addEventListener("click", (event) => {
+    const puntos = myChartTiempoIncidencias.getElementsAtEventForMode(
+      event,
+      "nearest",
+      {
+        intersect: true,
+      },
+      true
+    );
+
+    if (puntos.length) {
+      const puntoIndice = puntos[0].index;
+      const etiqueta = myChartTiempoIncidencias.data.labels[puntoIndice];
+      const valor = myChartTiempoIncidencias.data.datasets[0].data[puntoIndice];
+
+      console.log(datosTiempoPromedioFinalizacionIncidencias);
+
+      let indice = mesesDelAnio.indexOf(etiqueta);
+      let data = "";
+
+      if (statusIdTiempoIncidencia === 0) {
+        data = datosTiempoPromedioFinalizacionIncidencias[indice];
+      } else {
+        data = datosTiempoPromedioFinalizacionIncidenciasYear.filter(
+          (el) => el.Año === etiqueta
+        )[0];
+
+        console.log(data);
+      }
+
+      Swal.fire({
+        title: `<h4>Promedio de tiempo de incidenicas finalizadas (${etiqueta})</h4> <hr/>`,
+        icon: "info",
+        html: `<h5>tiempo total (${
+          statusIdTiempoIncidencia === 0 ? "Mensual" : "Anual"
+        }): <b>${
+          statusIdTiempoIncidencia === 0
+            ? data.tiempo_total
+            : data.tiempo_total_solucionado
+        }</b></h5>
              <h5>Varianza Porcentual: <b>${
                statusIdTiempoIncidencia === 0
                  ? data.tasa_variacion_porcentual
                  : data.tasa_de_variación
              }%</b></h5>`,
-      showConfirmButton: false,
-      showCancelButton: false,
-    });
+        showConfirmButton: false,
+        showCancelButton: false,
+      });
 
-    // Evento personalizado
-    // fn(etiqueta, valor);
+      // Evento personalizado
+      // fn(etiqueta, valor);
 
-    // Aquí puedes agregar más lógica o llamar a una función personalizada
-  }
-});
-
-ctx8.addEventListener("click", (event) => {
-  const puntos = myChartTiempoAsignacionIncidencia.getElementsAtEventForMode(
-    event,
-    "nearest",
-    {
-      intersect: true,
-    },
-    true
-  );
-
-  console.log("hola");
-
-  if (puntos.length) {
-    const puntoIndice = puntos[0].index;
-    const etiqueta = myChartTiempoAsignacionIncidencia.data.labels[puntoIndice];
-    const valor =
-      myChartTiempoAsignacionIncidencia.data.datasets[0].data[puntoIndice];
-
-    let indice = mesesDelAnio.indexOf(etiqueta);
-
-    let data = "";
-
-    if (statusIdAsignacionIncidencia === 0) {
-      data = datosTiempoPromedioAsignacionIncidencias[indice];
-    } else {
-      data = datosTiempoPromedioAsignacionIncidenciasYear.filter(
-        (el) => el.anio === etiqueta
-      )[0];
-
-      console.log(data);
+      // Aquí puedes agregar más lógica o llamar a una función personalizada
     }
+  });
 
-    Swal.fire({
-      title: `<h4>Tiempo promedio de incidenicas asignadas (${etiqueta})</h4> <hr/>`,
-      icon: "info",
-      html: `<h5>tiempo total (${
-        statusIdAsignacionIncidencia === 0 ? "Mensual" : "Anual"
-      }): <b>${data.tiempo_total_asignacion}</b></h5>
+if (ctx8 && ctx8.offsetParent !== null)
+  ctx8.addEventListener("click", (event) => {
+    const puntos = myChartTiempoAsignacionIncidencia.getElementsAtEventForMode(
+      event,
+      "nearest",
+      {
+        intersect: true,
+      },
+      true
+    );
+
+    console.log("hola");
+
+    if (puntos.length) {
+      const puntoIndice = puntos[0].index;
+      const etiqueta =
+        myChartTiempoAsignacionIncidencia.data.labels[puntoIndice];
+      const valor =
+        myChartTiempoAsignacionIncidencia.data.datasets[0].data[puntoIndice];
+
+      let indice = mesesDelAnio.indexOf(etiqueta);
+
+      let data = "";
+
+      if (statusIdAsignacionIncidencia === 0) {
+        data = datosTiempoPromedioAsignacionIncidencias[indice];
+      } else {
+        data = datosTiempoPromedioAsignacionIncidenciasYear.filter(
+          (el) => el.anio === etiqueta
+        )[0];
+
+        console.log(data);
+      }
+
+      Swal.fire({
+        title: `<h4>Tiempo promedio de incidenicas asignadas (${etiqueta})</h4> <hr/>`,
+        icon: "info",
+        html: `<h5>tiempo total (${
+          statusIdAsignacionIncidencia === 0 ? "Mensual" : "Anual"
+        }): <b>${data.tiempo_total_asignacion}</b></h5>
              <h5>Varianza Porcentual: <b>${
                data.tasa_variacion_porcentual
              }%</b></h5>`,
-      showConfirmButton: false,
-      showCancelButton: false,
-    });
+        showConfirmButton: false,
+        showCancelButton: false,
+      });
 
-    // Evento personalizado
-    // fn(etiqueta, valor);
+      // Evento personalizado
+      // fn(etiqueta, valor);
 
-    // Aquí puedes agregar más lógica o llamar a una función personalizada
-  }
-});
-
-ctx6.addEventListener("click", (event) => {
-  const puntos = myChartCapacitaciones.getElementsAtEventForMode(
-    event,
-    "nearest",
-    {
-      intersect: true,
-    },
-    true
-  );
-
-  if (puntos.length) {
-    const puntoIndice = puntos[0].index;
-    const etiqueta = myChartCapacitaciones.data.labels[puntoIndice];
-    const valor = myChartCapacitaciones.data.datasets[0].data[puntoIndice];
-
-    console.log(etiqueta, valor);
-    console.log(datosVarianzaCapacitaciones);
-
-    let indice = mesesDelAnio.indexOf(etiqueta);
-    let data = datosVarianzaCapacitaciones[indice];
-
-    Swal.fire({
-      title: `<h4>Participación en capacitaciones (${etiqueta})</h4> <hr/>`,
-      icon: "info",
-      html: `<h5>Participación Actual: <b>${data.participacion_actual}</b></h5>
-             <h5>Varianza Porcentual: <b>${data.tasa_variacion_porcentual}%</b></h5>`,
-      showConfirmButton: false,
-      showCancelButton: false,
-    });
-
-    // Evento personalizado
-    // fn(etiqueta, valor);
-
-    // Aquí puedes agregar más lógica o llamar a una función personalizada
-  }
-});
-
-ctx9.addEventListener("click", (event) => {
-  const puntos = myChartMantenimientoVariance.getElementsAtEventForMode(
-    event,
-    "nearest",
-    {
-      intersect: true,
-    },
-    true
-  );
-
-  if (puntos.length) {
-    const puntoIndice = puntos[0].index;
-    const etiqueta = myChartMantenimientoVariance.data.labels[puntoIndice];
-    const valor =
-      myChartMantenimientoVariance.data.datasets[0].data[puntoIndice];
-
-    console.log(etiqueta, valor);
-    console.log(datosVarianzaMantenimientosGraficoYear);
-
-    let indice = mesesDelAnio.indexOf(etiqueta);
-    let data = "";
-
-    if (statusIdMantenimiento === 0) {
-      data = datosVarianzaMantenimientosGrafico[indice];
-    } else {
-      data = datosVarianzaMantenimientosGraficoYear.filter(
-        (el) => el.Anio === etiqueta
-      )[0];
-
-      console.log(data);
+      // Aquí puedes agregar más lógica o llamar a una función personalizada
     }
+  });
 
-    Swal.fire({
-      title: `<h4>Promedio de mantenimientos solucionados (${etiqueta})</h4> <hr/>`,
-      icon: "info",
-      html: `<h5>Mantenimientos solucionados: <b>${data.mantenimientos_finalizados}</b></h5>
+if (ctx9 && ctx9.offsetParent !== null)
+  ctx9.addEventListener("click", (event) => {
+    const puntos = myChartMantenimientoVariance.getElementsAtEventForMode(
+      event,
+      "nearest",
+      {
+        intersect: true,
+      },
+      true
+    );
+
+    if (puntos.length) {
+      const puntoIndice = puntos[0].index;
+      const etiqueta = myChartMantenimientoVariance.data.labels[puntoIndice];
+      const valor =
+        myChartMantenimientoVariance.data.datasets[0].data[puntoIndice];
+
+      console.log(etiqueta, valor);
+      console.log(datosVarianzaMantenimientosGraficoYear);
+
+      let indice = mesesDelAnio.indexOf(etiqueta);
+      let data = "";
+
+      if (statusIdMantenimiento === 0) {
+        data = datosVarianzaMantenimientosGrafico[indice];
+      } else {
+        data = datosVarianzaMantenimientosGraficoYear.filter(
+          (el) => el.Anio === etiqueta
+        )[0];
+
+        console.log(data);
+      }
+
+      Swal.fire({
+        title: `<h4>Promedio de mantenimientos solucionados (${etiqueta})</h4> <hr/>`,
+        icon: "info",
+        html: `<h5>Mantenimientos solucionados: <b>${data.mantenimientos_finalizados}</b></h5>
              <h5>Varianza Porcentual: <b>${data.tasa_de_variación}%</b></h5>`,
-      showConfirmButton: false,
-      showCancelButton: false,
-    });
+        showConfirmButton: false,
+        showCancelButton: false,
+      });
 
-    // Evento personalizado
-    // fn(etiqueta, valor);
+      // Evento personalizado
+      // fn(etiqueta, valor);
 
-    // Aquí puedes agregar más lógica o llamar a una función personalizada
+      // Aquí puedes agregar más lógica o llamar a una función personalizada
+    }
+  });
+
+async function getMonthIncident(mesId, mes) {
+  let queryIncident = await fetch(`${base_url}/Home/getMonthIncident/${mesId}`);
+  let dataIncident = await queryIncident.json();
+
+  console.log(dataIncident);
+
+  let btn = document.getElementById("btnCloseModalIncidenciasPorMes");
+  btn.click();
+
+  let datosPendientes = [];
+  let datosEnProceso = [];
+  let datosFinalizados = [];
+
+  for (let i = 0; i < dataIncident.length; i++) {
+    const el = dataIncident[i];
+
+    if (el.estado === "Pendiente") {
+      datosPendientes.push(el);
+    } else if (el.estado === "En Proceso") {
+      datosEnProceso.push(el);
+    } else {
+      datosFinalizados.push(el);
+    }
   }
-});
+
+  IncidenciasPendientesTable.clear().rows.add(datosPendientes).draw();
+  IncidenciasEnProcesoTable.clear().rows.add(datosEnProceso).draw();
+  IncidenciasFinalizadasTable.clear().rows.add(datosFinalizados).draw();
+  document.getElementById("countPendiente").textContent =
+    datosPendientes.length;
+  document.getElementById("countEnProceso").textContent = datosEnProceso.length;
+  document.getElementById("countFinalizado").textContent =
+    datosFinalizados.length;
+
+  document.getElementById("mesSeleccionado").textContent = mes;
+
+  const myModal = new bootstrap.Modal("#modalDetalleIncidencia");
+  myModal.show();
+}

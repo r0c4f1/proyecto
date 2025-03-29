@@ -29,6 +29,8 @@ const RECURSOS_TABLE = new DataTable("#recursos", {
 });
 let selectResource = document.getElementById("recursoReciclado");
 const btnAddResourceSubmit = document.querySelector("#btnAddResourceSubmit");
+let recursosReciclados = "";
+let recursoRecicladoCantidad = "";
 
 function alertTimeOut(icon, text, timer) {
   Swal.fire({
@@ -39,6 +41,31 @@ function alertTimeOut(icon, text, timer) {
     showConfirmButton: false,
     timer,
   });
+}
+
+async function ObtenerRecursosReciclados() {
+  try {
+    let queryRecycleResources = await fetch(
+      `${base_url}/Resources/getRecycledResource/`
+    );
+    let dataRecycleResources = await queryRecycleResources.json();
+
+    console.log(
+      "Datos reciclados obtenidos al iniciar la página:",
+      dataRecycleResources
+    );
+
+    // Actualizar las variables con las propiedades correctas
+    recursosReciclados = dataRecycleResources.map((item) => item.nombre); // Si la API usa "nombre"
+    recursoRecicladoCantidad = dataRecycleResources.map(
+      (item) => item.cantidad
+    ); // Si la API usa "cantidad"
+    initializeChart();
+    console.log("Etiquetas:", recursosReciclados);
+    console.log("Cantidades:", recursoRecicladoCantidad);
+  } catch (error) {
+    console.error("Error al obtener los recursos reciclados:", error);
+  }
 }
 
 async function editar(id) {
@@ -263,6 +290,7 @@ document
 
 document.addEventListener("DOMContentLoaded", () => {
   const selectResource = document.getElementById("recursoReciclado");
+  ObtenerRecursosReciclados();
 
   if (selectResource) {
     fillSelectOptions(selectResource);
@@ -603,51 +631,78 @@ function reporteRecursosReciclaje() {
   window.open(`${base_url}/Report/listaReporteRecursosReciclaje`, "_blank");
 }
 
-// ================= GRAFICO ==================
+// ================= CARRUSEL ESCALABLE ==================
+function initializeChart() {
+  const ctx = document.getElementById("myChart").getContext("2d");
+  const labels = recursosReciclados; // Etiquetas de los datos
+  const data = recursoRecicladoCantidad; // Datos dinámicos
 
-const ctx = document.getElementById("myChart").getContext("2d");
-const myChart = new Chart(ctx, {
-  type: "bar",
-  data: {
-    labels: Array.from({ length: 40 }, (_, i) => `Item ${i + 1}`), // Etiquetas
-    datasets: [
-      {
-        label: "Random Dataset",
-        data: Array.from({ length: 40 }, () => Math.floor(Math.random() * 100)), // Datos
-        backgroundColor: "rgba(54, 162, 235, 0.5)",
-        borderColor: "rgba(54, 162, 235, 1)",
-        borderWidth: 1,
-      },
-    ],
-  },
-  options: {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "top",
-      },
-      title: {
-        display: true,
-        text: "Example: Chart with 40 Data Points",
-      },
-      tooltip: {
-        enabled: true, // Mostrar tooltip al pasar el ratón
-      },
+  let currentGroup = 0; // Índice del grupo actual
+  const groupSize = 10; // Tamaño del grupo
+
+  function getGroupData() {
+    const start = currentGroup * groupSize;
+    const end = Math.min(start + groupSize, data.length); // Evita exceder el total
+    return {
+      labels: labels.slice(start, end), // Dividir etiquetas
+      data: data.slice(start, end), // Dividir datos
+    };
+  }
+
+  let groupData = getGroupData();
+  const myChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: groupData.labels,
+      datasets: [
+        {
+          label: "Recursos Reciclados",
+          data: groupData.data,
+          backgroundColor: "rgba(75, 192, 192, 0.5)",
+          borderColor: "rgba(75, 192, 192, 1)",
+          borderWidth: 1,
+        },
+      ],
     },
-    scales: {
-      x: {
-        ticks: {
-          autoSkip: true, // Saltar etiquetas automáticamente
-          maxTicksLimit: 10, // Mostrar un máximo de 10 etiquetas
-          maxRotation: 45, // Rotar etiquetas
-          minRotation: 45, // Asegurar rotación mínima
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: "top" },
+        title: {
+          display: true,
+          text: "Carrusel Escalable de Recursos Reciclados",
         },
       },
-      y: {
-        beginAtZero: true, // Comenzar en 0 en eje Y
-      },
+      scales: { y: { beginAtZero: true } },
     },
-  },
+  });
+
+  function updateChart() {
+    groupData = getGroupData();
+    myChart.data.labels = groupData.labels;
+    myChart.data.datasets[0].data = groupData.data;
+    myChart.update();
+  }
+
+  document.getElementById("prevBtn").addEventListener("click", () => {
+    if (currentGroup > 0) {
+      currentGroup--;
+      updateChart();
+    }
+  });
+
+  document.getElementById("nextBtn").addEventListener("click", () => {
+    if ((currentGroup + 1) * groupSize < labels.length) {
+      currentGroup++;
+      updateChart();
+    }
+  });
+}
+
+document.querySelectorAll(".dropdown-menu button").forEach((button) => {
+  button.addEventListener("click", (event) => {
+    event.stopPropagation(); // Evita que el clic cierre el menú desplegable
+  });
 });
 // ===================== HISTORICO DE OPERACIONES ======================
 async function historico(tipoOperacion, descripcionOperacion, estadoOperacion) {

@@ -37,6 +37,23 @@ class PoaModel extends Mysql
 		return $request;
 	}
 
+	public function selectDinamicGoalsAlert()
+	{
+		$sql = "SELECT 
+					m.meta AS nombre_meta,
+					m.id_metas,
+					md.fecha_limite,
+					md.id_metas_dinamicas,
+					md.cantidad_objetivo,
+					md.cantidad_progreso
+				FROM metas_dinamicas md
+				INNER JOIN metas m ON md.id_metas = m.id_metas 
+				WHERE estado = 1";
+		$request = $this->select_all($sql);
+	
+		return $request;
+	}
+
 	public function selectDinamicGoalsForzada($id) // mal optimizado forzado por la hora
 	{
 		$sql = "SELECT 

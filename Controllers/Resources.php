@@ -63,6 +63,17 @@ class Resources extends Controllers{
         die();
     }
 
+
+    public function getRecycledResource() {
+        if($_GET) {
+    
+            $requestUser = $this->model->selectRecycledResource();
+    
+            echo json_encode($requestUser, JSON_UNESCAPED_UNICODE);
+        }
+        die();
+    }
+
     public function registerResource() {
         if($_POST) {
             $nombre = strClean($_POST["nombre"]);

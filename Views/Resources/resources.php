@@ -50,11 +50,13 @@ sideBar(); ?>
                     </form>
         </div>
             </div>
-            <div class="dropdown ms-2 " hidden>
+            <div class="dropdown ms-2 ">
     <button class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
          Estadística <i class="fas fa-recycle"></i>
         </button>
         <div class="dropdown-menu p-3" aria-labelledby="dropdownMenuButton" style="min-width: 350px;">
+        <button id="prevBtn">Anterior</button>
+        <button id="nextBtn">Siguiente</button>
     <div style="width: 700px; margin: auto;">
   <canvas id="myChart"></canvas>
 </div></div></div>
