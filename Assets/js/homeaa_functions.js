@@ -12,7 +12,7 @@ const IncidenciasPendientesTable = new DataTable("#tablePendientes", {
   },
   columns: [
     {
-      data: "nombres",
+      data: "reportado_por",
     },
     {
       data: "fecha_reporte",
@@ -47,7 +47,7 @@ const IncidenciasEnProcesoTable = new DataTable("#tableEnProceso", {
   },
   columns: [
     {
-      data: "nombres",
+      data: "reportado_por",
     },
     {
       data: "fecha_reporte",
@@ -85,7 +85,7 @@ const IncidenciasFinalizadasTable = new DataTable("#tableFinalizadas", {
   },
   columns: [
     {
-      data: "nombres",
+      data: "reportado_por",
     },
     {
       data: "fecha_reporte",
@@ -529,7 +529,7 @@ async function descripcionProyecto(id_proyecto, nombre) {
             <div>
               <p class="mb-0 small fw-medium text-start">Fecha Final:</p>
               <p class="mb-0 text-start fs-6">${
-                !project.fecha_fin || project.fecha_fin === "null"
+                project.fecha_fin === null
                   ? "Sin fecha de finalización"
                   : project.fecha_fin
               }</p>
@@ -804,7 +804,7 @@ async function habilitarChart() {
     if (chart && chart.offsetParent !== null) {
       chart.classList.remove("visually-hidden");
 
-      if (el.id_graficos >= 5 && el.id_graficos <= 9) {
+      if (el.id_graficos >= 5) {
         chart.style.width = "550px";
         chart.style.height = "400px";
       } else {
@@ -837,28 +837,26 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     manejador
   );
   // ----- GRAFICO INCIDENCIAS PROYECTOS TOTALES
-  if (userLevel != 0) {
-    let queryIndicatorProject = await fetch(
-      `${base_url}/Home/getProjectIndicator/${userLevel}/${unidad}`
-    );
-    let dataProject = await queryIndicatorProject.json();
+  let queryIndicatorProject = await fetch(
+    `${base_url}/Home/getProjectIndicator`
+  );
+  let dataProject = await queryIndicatorProject.json();
 
-    let pendiente =
-      dataProject.find((item) => item.estado === "Pendiente")?.cantidad || 0;
-    let enProceso =
-      dataProject.find((item) => item.estado === "En Proceso")?.cantidad || 0;
-    let finalizado =
-      dataProject.find((item) => item.estado === "Finalizado")?.cantidad || 0;
+  let pendiente =
+    dataProject.find((item) => item.estado === "Pendiente")?.cantidad || 0;
+  let enProceso =
+    dataProject.find((item) => item.estado === "En Proceso")?.cantidad || 0;
+  let finalizado =
+    dataProject.find((item) => item.estado === "Finalizado")?.cantidad || 0;
 
-    estadisticas(
-      ["Pendiente", "En Proceso", "Finalizado"],
-      [pendiente, enProceso, finalizado],
-      ctx2,
-      "doughnut",
-      "Cantidad",
-      manejadorProyecto
-    );
-  }
+  estadisticas(
+    ["Pendiente", "En Proceso", "Finalizado"],
+    [pendiente, enProceso, finalizado],
+    ctx2,
+    "doughnut",
+    "Cantidad",
+    manejadorProyecto
+  );
 
   // ------ grafico proyectos por usuario
 

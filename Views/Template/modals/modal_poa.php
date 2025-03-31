@@ -11,7 +11,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="row p-3">
-                    <label class="col-12 mb-4">
+                        <label class="col-12 mb-4">
                             Meta
                             <select name="meta" id="selectUnidad" class="form-select">
                                 <option value="">---</option>
@@ -20,12 +20,13 @@
 
                         <label class="col-6 mb-4">
                             Cantidad Objetivo
-                            <input type="text" name="cantidad_objetivo" class="form-control" placeholder="Cantidad Objetivo" maxlength="4">
+                            <input type="text" name="cantidad_objetivo" class="form-control"
+                                placeholder="Cantidad Objetivo" maxlength="4">
                         </label>
 
                         <label class="col-6">
                             Fecha Limite
-                            <input type="date" name="fecha_limite" class="form-control">
+                            <input type="date" name="fecha_limite" class="form-control" id="fecha_limite">
                         </label>
                     </div>
                 </div>

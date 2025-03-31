@@ -17,9 +17,9 @@ sideBar(); ?>
 
     <section class="card-container">
         <article class="d-flex justify-content-between">
-        <h3 class="main-title">Lista de Incidencias Asignadas</h3>
+            <h3 class="main-title">Lista de Incidencias Asignadas</h3>
             <div>
-            <a href="<?= base_url() ?>/TaskList/taskList">
+                <a href="<?= base_url() ?>/TaskList/taskList">
                     <button class="btn btn-warning">Lista de Tareas</button>
                 </a>
             </div>
@@ -49,7 +49,7 @@ sideBar(); ?>
 
     <section class="card-container">
         <article class="d-flex justify-content-between">
-        <h3 class="main-title">Lista de Proyectos Asignadas</h3>
+            <h3 class="main-title">Lista de Proyectos Asignadas</h3>
         </article>
         <hr>
 
@@ -73,6 +73,6 @@ sideBar(); ?>
 
 </main>
 
-<!-- <?= getModal('modal_assignments') ?> -->
+<?= getModal('modal_assignments') ?>
 
 <?php footerAdmin($data) ?>

@@ -120,6 +120,7 @@ class TaskList extends Controllers
     {
         if ($_POST) {
             $tipo = $_POST['tipoEntidad'];
+            // $tipo = $_POST['tipoCapturado'];
             $requestUser = $this->model->selectStatus($idCapturado, $tipo);
 
             echo json_encode($requestUser, JSON_UNESCAPED_UNICODE);

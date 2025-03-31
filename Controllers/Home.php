@@ -29,9 +29,14 @@ class Home extends Controllers{
         }
     }
 
-    public function getProjectIndicator() {
+    public function getProjectIndicator($parametros) {
         if ($_GET) {
-            $requestUser = $this->model->selectProjectIndicator();
+
+        $datos = explode("," , $parametros);
+        $nivel = $datos[0];
+        $unidad = $datos[1];
+
+            $requestUser = $this->model->selectProjectIndicator($nivel, $unidad);
 
             echo json_encode($requestUser, JSON_UNESCAPED_UNICODE);
         }

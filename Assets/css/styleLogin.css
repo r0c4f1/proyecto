@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"); */
 
 * {
   margin: 0;
@@ -44,7 +44,6 @@ body {
   background-position: center; /* Centra la imagen dentro del contenedor */
 }
 
-
 .btn:hover {
   background: rgba(40, 69, 231, 0.548);
   color: #fff;
@@ -55,7 +54,7 @@ body {
   margin-top: 90px; /* Espaciado desde el contenido superior */
   margin-left: -119px; /* Ajusta la alineación horizontal */
   color: #ffffff; /* Color llamativo para destacar */
-  
+
   font-weight: 500; /* Hace el texto más audaz */
   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.829); /* Sombra para efecto vistoso */
   letter-spacing: 1.5px; /* Espaciado entre letras para elegancia */
@@ -71,13 +70,11 @@ body {
   overflow: hidden;
 }
 
-
 button:disabled {
   background-color: #4b4b4b;
 }
 
 .login-container {
- 
   position: absolute;
   left: 80px;
   width: 550px;
@@ -327,17 +324,16 @@ input[type="number"] {
 }
 @media (max-width: 768px) {
   .nav {
-      /* Permite que los elementos ocupen varias líneas si es necesario */
-      height: auto; /* Ajusta la altura automáticamente */
+    /* Permite que los elementos ocupen varias líneas si es necesario */
+    height: auto; /* Ajusta la altura automáticamente */
   }
 
   .cintillo {
-      width: 100%; /* Haz que ocupe todo el ancho */
-      height: 80px; /* Ajusta la altura */
+    width: 100%; /* Haz que ocupe todo el ancho */
+    height: 80px; /* Ajusta la altura */
   }
 
   .nav-logo img {
-      height: 60px; /* Reduce el tamaño del logo */
+    height: 60px; /* Reduce el tamaño del logo */
   }
 }
-

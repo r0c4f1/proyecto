@@ -103,9 +103,15 @@ class Poa extends Controllers{
         $fecha_creacion = $datos[1];
         $fecha_limite = $datos[2];
 
-            $requestUser = $this->model->selectDataIncidentGoals($id, $fecha_creacion, $fecha_limite);
+        // $fechaLimiteHora = explode("---", $fecha_limite);
+		// $fechaHora = explode("---", $fecha_creacion);
+
+        // echo "$fechaLimiteHora[0] $fechaLimiteHora[1]";
+
+
+        $requestUser = $this->model->selectDataIncidentGoals($id, $fecha_creacion, $fecha_limite);
     
-            echo json_encode($requestUser, JSON_UNESCAPED_UNICODE);
+        echo json_encode($requestUser, JSON_UNESCAPED_UNICODE);
     }
 
     public  function getDataProjectGoals($parametros){

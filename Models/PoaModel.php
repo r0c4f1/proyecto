@@ -76,14 +76,15 @@ class PoaModel extends Mysql
 	public function selectDinamicGoalsCompleted()
 	{
 		$sql = "SELECT 
-					m.meta,
-					DATE_FORMAT(md.fecha_creacion, '%d/%m/%Y') AS fecha_creacionFormateada, 
-					DATE_FORMAT(md.fecha_limite, '%d/%m/%Y') AS fecha_limiteFormateada, 
-					md.cantidad_progreso, 
-					md.cantidad_objetivo,
-					md.estado
-				FROM metas_dinamicas md
-				INNER JOIN metas m ON md.id_metas = m.id_metas WHERE estado = 0 OR 2;
+    m.meta,
+    DATE_FORMAT(md.fecha_creacion, '%d/%m/%Y') AS fecha_creacionFormateada,
+    DATE_FORMAT(md.fecha_limite, '%d/%m/%Y') AS fecha_limiteFormateada,
+    md.cantidad_progreso,
+    md.cantidad_objetivo,
+    md.estado
+FROM metas_dinamicas md
+INNER JOIN metas m ON md.id_metas = m.id_metas
+WHERE md.estado IN (0, 2)
 				";
 
 		$request = $this->select_all($sql);
@@ -97,8 +98,8 @@ class PoaModel extends Mysql
 		$request = $this->select($sql);
 		if ($request) return false;
 
-		$sql = "INSERT INTO metas_dinamicas (id_metas, fecha_creacion, fecha_limite, cantidad_progreso, cantidad_objetivo, estado) 
-					VALUES (?,NOW(),?,?,?,?)";
+		$sql = "INSERT INTO metas_dinamicas (id_metas, fecha_limite, cantidad_progreso, cantidad_objetivo, estado) 
+					VALUES (?,?,?,?,?)";
 
 		$arrData = array($meta, $fecha_limite, 0, $cantidad_objetivo, 1);
 
@@ -124,18 +125,21 @@ class PoaModel extends Mysql
 
 	// ===================================== CONSULTA METAS REPARACION DE EQUIPOS Y META RESOLUCION DE INCIDENCIAS ============================
 	public function selectDataIncidentGoals($id, $fecha_creacion, $fecha_limite)
-	{
+	{	
+
+		$fechaLimiteHora = explode("---", $fecha_limite);
+		$fechaHora = explode("---", $fecha_creacion);
 
 		if ($id = 1) {
 			$sql = "SELECT COUNT(i.id_incidencia) AS cantidad
 						FROM incidencias i
 						INNER JOIN tipo_incidencia ti ON i.id_tipo = ti.id_tipo
-					WHERE ti.id_metas = $id AND i.fecha_solucion BETWEEN '$fecha_creacion' AND '$fecha_limite'";
+					WHERE ti.id_metas = $id AND i.fecha_solucion BETWEEN '$fechaHora[0] 00:00:00' AND '$fechaLimiteHora[0] $fechaLimiteHora[1]'";
 		} else {
 			$sql = "SELECT COUNT(i.id_incidencia) AS cantidad
 						FROM incidencias i
 						INNER JOIN tipo_incidencia ti ON i.id_tipo = ti.id_tipo
-					WHERE i.fecha_solucion BETWEEN '$fecha_creacion' AND '$fecha_limite'";
+					WHERE i.fecha_solucion BETWEEN '$fechaHora[0] 00:00:00' AND '$fechaLimiteHora[0] $fechaLimiteHora[1]'";
 		}
 
 		$request = $this->select($sql);
@@ -148,9 +152,12 @@ class PoaModel extends Mysql
 	public function selectDataProjectGoals($id, $fecha_creacion, $fecha_limite)
 	{
 
+		$fechaLimiteHora = explode("---", $fecha_limite);
+		$fechaHora = explode("---", $fecha_creacion);
+
 		$sql = "SELECT COUNT(*) as cantidad FROM `asignacion` a INNER JOIN proyecto p ON a.id_asignacion = p.id_asignacion 
 			WHERE a.estado = 'Finalizado' AND a.status = 1 AND a.tipo_asignacion = 0
-			AND p.fecha_fin BETWEEN '$fecha_creacion' AND '$fecha_limite'";
+			AND p.fecha_fin BETWEEN '$fechaHora[0] 00:00:00' AND '$fechaLimiteHora[0] $fechaLimiteHora[1]'";
 
 		$request = $this->select($sql);
 
@@ -176,10 +183,13 @@ class PoaModel extends Mysql
 	public function selectTrainedPersonnel($id, $fecha_creacion, $fecha_limite)
 	{
 
+		$fechaLimiteHora = explode("---", $fecha_limite);
+		$fechaHora = explode("---", $fecha_creacion);
+
 		$sql = "SELECT COUNT(DISTINCT uc.id_usuario) AS cantidad
 				FROM usuario_capacitacion uc
 				JOIN capacitacion c ON uc.id_capacitacion = c.id_capacitacion
-				WHERE c.fecha BETWEEN '$fecha_creacion' AND '$fecha_limite'";
+				WHERE c.fecha BETWEEN '$fechaHora[0] 00:00:00' AND '$fechaLimiteHora[0] 23:59:59'";
 
 		$request = $this->select($sql);
 

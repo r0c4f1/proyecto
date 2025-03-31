@@ -15,14 +15,39 @@ class HomeModel extends Mysql
 		return $request;
 	}
 
-	public function selectProjectIndicator()
+	public function selectProjectIndicator($nivel, $unidad = null)
 	{
-		$sql = "SELECT p.id_proyecto, a.estado, COUNT(id_proyecto) AS cantidad FROM proyecto p 
+		if ($nivel == 0) {
+			return false; // Nivel 0: Retorna false (no tiene permisos)
+		}
+		elseif ($nivel == 1) {
+			// Nivel 1: Filtra por unidad
+			$sql = "SELECT p.id_proyecto, a.estado, COUNT(p.id_proyecto) AS cantidad 
+					FROM proyecto p 
+					INNER JOIN asignacion a ON a.id_asignacion = p.id_asignacion 
+					INNER JOIN equipo_usuario eu ON eu.id_equipo = a.id_equipo
+					INNER JOIN usuario u ON u.id_usuario = eu.id_usuario
+					WHERE a.status = 1 
+					AND u.id_unidad = $unidad
+					GROUP BY a.estado, p.id_proyecto";
+		}
+		elseif ($nivel == 2) {
+			// Nivel 2: Consulta sin filtrar por unidad (acceso total)
+			$sql = "SELECT p.id_proyecto, a.estado, COUNT(p.id_proyecto) AS cantidad 
+					FROM proyecto p 
+					INNER JOIN asignacion a ON a.id_asignacion = p.id_asignacion 
+					WHERE a.status = 1 
+					GROUP BY a.estado, p.id_proyecto";
+		}
+		else {
+			$sql = "SELECT p.id_proyecto, a.estado, COUNT(p.id_proyecto) AS cantidad 
+			FROM proyecto p 
 			INNER JOIN asignacion a ON a.id_asignacion = p.id_asignacion 
-			WHERE a.status = 1 GROUP BY a.estado";
-
+			WHERE a.status = 1 
+			GROUP BY a.estado, p.id_proyecto";
+		}
+	
 		$request = $this->select_all($sql);
-
 		return $request;
 	}
 
@@ -134,10 +159,11 @@ class HomeModel extends Mysql
 	}
 
 	public function selectMonthIncident($mes) {
-		$sql = "SELECT i.*, a.estado, a.fecha_asignacion, e.nombre_equipo FROM incidencias i 
+		$sql = "SELECT i.*, a.estado, a.fecha_asignacion, e.nombre_equipo, u.nombres FROM incidencias i 
 				INNER JOIN asignacion a ON i.id_asignacion = a.id_asignacion
 				INNER JOIN equipo e ON e.id_equipo = a.id_equipo
-				WHERE MONTH(fecha_reporte) = $mes AND i.id_asignacion != 0 AND a.tipo_asignacion = 1";
+				INNER JOIN usuario u on u.id_usuario = i.reportado_por 
+				WHERE MONTH(fecha_reporte) = $mes AND i.id_asignacion != 0";
 
 		$request = $this->select_all($sql);
 

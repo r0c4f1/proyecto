@@ -82,6 +82,7 @@ const META_TABLE = new DataTable("#table_metas", {
 
 // ================= DEFINIR VARIABLES ====================00
 let formAddGoals = document.getElementById("formAddGoals");
+let fechaLimite = document.getElementById("fecha_limite");
 let ContenedorCard = document.getElementById("ContenedorCard");
 datosFiltro = [];
 let selectUnidad = document.getElementById("selectUnidad");
@@ -132,6 +133,18 @@ async function hola() {
 
     console.log(data); // Verifica la estructura de los datos en la consola
 
+    // Verificar si no hay metas activas (arreglo vacío)
+    if (data.length === 0) {
+      Swal.fire({
+        title: "Sin metas activas",
+        text: "No tienes ninguna meta activa en este momento.",
+        icon: "warning",
+        confirmButtonText: "Cerrar",
+      });
+
+      return; // Detener la ejecución aquí si no hay metas activas
+    }
+
     // Filtrar metas con progreso menor al 90%
     const hoy = new Date();
     const metasPendientes = data.filter((item) => {
@@ -144,7 +157,12 @@ async function hola() {
       // Si hay metas pendientes, calcular tiempo restante y generar mensajes personalizados
       const mensajes = metasPendientes.map((item) => {
         const fechaLimite = new Date(item.fecha_limite);
+
         const diferenciaMilisegundos = fechaLimite - hoy;
+        console.log(
+          new Date(item.fecha_limite) - new Date(hoy),
+          diferenciaMilisegundos
+        );
         const diferenciaDias = Math.floor(
           diferenciaMilisegundos / (1000 * 60 * 60 * 24)
         );
@@ -160,32 +178,44 @@ async function hola() {
         if (porcentaje < 30) {
           // Mensaje urgente según el id_metas
           if (item.id_metas === 1)
-            consejo = "<b>Urgente:</b> Revisa reparaciones.";
+            consejo =
+              "<br><b class='text-danger'>Urgente:</b> Capacita al equipo responsable de las reparaciones con conocimientos actualizados sobre nuevas tecnologías y métodos de reparación.";
           if (item.id_metas === 2)
-            consejo = "<b>Urgente:</b> Revisa incidencias.";
+            consejo =
+              "<br><b class='text-danger'>Urgente:</b> Desarrolla un equipo específico para manejar incidencias críticas con tiempos de respuesta mínimos.";
           if (item.id_metas === 3)
-            consejo = "<b>Urgente:</b> Revisa proyectos.";
+            consejo =
+              "<br><b class='text-danger'>Urgente:</b> Realiza evaluaciones rápidas de los avances actuales para detectar problemas críticos y reorganizar prioridades.";
           if (item.id_metas === 4)
-            consejo = "<b>Urgente:</b> Revisa capacitaciones.";
-          if (item.id_metas === 5) consejo = "<b>Urgente:</b> Revisa personal.";
+            consejo =
+              "<br><b class='text-danger'>Urgente:</b> Reestructura los programas de capacitación.";
+          if (item.id_metas === 5)
+            consejo =
+              "<br><b class='text-danger'>Urgente:</b> Asegúrate de que las capacitaciones se alineen con las necesidades reales del personal. Es posible que el contenido se perciba como irrelevante o innecesario para su trabajo.";
         } else if (porcentaje >= 30 && porcentaje < 90) {
           // Mensaje regular según el id_metas
           if (item.id_metas === 1)
-            consejo = "<b>Consejo:</b> Revisa reparaciones.";
+            consejo =
+              "<br><b class='text-primary'>Consejo:</b> Asegurarse de que las piezas necesarias estén disponibles en todo momento para evitar demoras en las reparaciones.";
           if (item.id_metas === 2)
-            consejo = "<b>Consejo:</b> Revisa incidencias.";
+            consejo =
+              "<br><b class='text-primary'>Consejo:</b> Entrenar al personal para resolver problemas comunes rápidamente sin necesidad de escalar. <b>Considere realizar más capacitaciones.</b>";
           if (item.id_metas === 3)
-            consejo = "<b>Consejo:</b> Revisa proyectos.";
+            consejo =
+              "<br><b class='text-primary'>Consejo:</b> Mantener reuniones periódicas para ajustar el progreso, discutir obstáculos y garantizar que todos los involucrados estén alineados.";
           if (item.id_metas === 4)
-            consejo = "<b>Consejo:</b> Revisa capacitaciones.";
-          if (item.id_metas === 5) consejo = "<b>Consejo:</b> Revisa personal.";
+            consejo =
+              "<br><b class='text-primary'>Consejo:</b> Realizar reuniones con el personal para saber que temas son interesantes para ellos en un curso.";
+          if (item.id_metas === 5)
+            consejo =
+              "<br><b class='text-primary'>Consejo:</b> Diseña programas personalizados basados en las necesidades específicas de cada rol dentro de la organización.";
         }
 
         // Formatear el mensaje según los días o horas restantes
         if (diferenciaDias > 0) {
-          return `Quedan ${diferenciaDias} días para la meta "${item.nombre_meta}". ${consejo}`;
+          return `Quedan <b>${diferenciaDias}</b> días para la meta "<b>${item.nombre_meta}</b>". ${consejo}`;
         } else {
-          return `Quedan ${diferenciaHoras} horas para la meta "${item.nombre_meta}". ${consejo}`;
+          return `Quedan <b>${diferenciaHoras}</b> horas para la meta "<b>${item.nombre_meta}</b>". ${consejo}`;
         }
       });
 
@@ -231,6 +261,17 @@ function llenarCards() {
 // ============================= FORMULARIO DE METAS EVENTO ====================
 formAddGoals.addEventListener("submit", async (e) => {
   e.preventDefault();
+  let mes = fechaLimite.value.split("-")[1].replace("0", "");
+  let dia = fechaLimite.value.split("-")[2];
+  let anio = fechaLimite.value.split("-")[0];
+
+  let fechaNueva = `${dia}/${mes}/${anio}`;
+
+  if (fechaNueva === new Date().toLocaleDateString()) {
+    alertTimeOut("error", "No puede asignar la fecha de hoy", 3000);
+
+    return;
+  }
 
   let btnCloseModalAddGoals = document.getElementById("btnCloseModalAddGoals");
   let formData = new FormData(formAddGoals);
@@ -254,12 +295,13 @@ formAddGoals.addEventListener("submit", async (e) => {
   tipoOperacion = "Creación";
   descripcionOperacion = `Registro de Meta: 
   <strong>${dataMeta.meta}</strong>, 
-  Con la Cantidad Obejtivo: <strong>${formData.get(
+  Con la Cantidad Objetivo: <strong>${formData.get(
     "cantidad_objetivo"
   )}</strong>,
   y la Fecha Límite: <strong>${fecha}</strong>`;
   // ==========================================================
 
+  formData.append("fecha_limite", `${fecha_limite.value} 23:59:59`);
   let query = await fetch(`${base_url}/Poa/newDinamicGoals`, {
     method: "POST",
     body: formData,
@@ -307,7 +349,9 @@ async function llenarCardPrimeraMeta() {
 
   // ===================== TRAE LOS DATOS QUE SE ENCUENTRAN ENTRE ESAS FECHAS ES DECIR LAS METAS QUE ESTAN TERMINANDAS ===========
   let query2 = await fetch(
-    `${base_url}/Poa/getDataIncidentGoals/${id}/${data.fecha_creacion}/${data.fecha_limite}`
+    `${base_url}/Poa/getDataIncidentGoals/${id}/${data.fecha_creacion
+      .split(" ")
+      .join("---")}/${data.fecha_limite.split(" ").join("---")}`
   );
   let data2 = await query2.json();
 
@@ -389,8 +433,15 @@ async function llenarCardSegundaMeta() {
   }
 
   // ===================== TRAE LOS DATOS QUE SE ENCUENTRAN ENTRE ESAS FECHAS ES DECIR LAS METAS QUE ESTAN TERMINANDAS ===========
+  console.log(
+    data.fecha_creacion.split(" ").join("---"),
+    data.fecha_limite.split(" ").join("---")
+  );
+
   let query2 = await fetch(
-    `${base_url}/Poa/getDataIncidentGoals/${id}/${data.fecha_creacion}/${data.fecha_limite}`
+    `${base_url}/Poa/getDataIncidentGoals/${id}/${data.fecha_creacion
+      .split(" ")
+      .join("---")}/${data.fecha_limite.split(" ").join("---")}`
   );
   let data2 = await query2.json();
 
@@ -474,7 +525,9 @@ async function llenarCardTerceraMeta() {
 
   // ===================== TRAE LOS DATOS QUE SE ENCUENTRAN ENTRE ESAS FECHAS ES DECIR LAS METAS QUE ESTAN TERMINANDAS ===========
   let query2 = await fetch(
-    `${base_url}/Poa/getDataProjectGoals/${id}/${data.fecha_creacion}/${data.fecha_limite}`
+    `${base_url}/Poa/getDataProjectGoals/${id}/${data.fecha_creacion
+      .split(" ")
+      .join("---")}/${data.fecha_limite.split(" ").join("---")}`
   );
   let data2 = await query2.json();
 
@@ -558,7 +611,9 @@ async function llenarCardCuartaMeta() {
 
   // ===================== TRAE LOS DATOS QUE SE ENCUENTRAN ENTRE ESAS FECHAS ES DECIR LAS METAS QUE ESTAN TERMINANDAS ===========
   let query2 = await fetch(
-    `${base_url}/Poa/getDataTrainingGoals/${id}/${data.fecha_creacion}/${data.fecha_limite}`
+    `${base_url}/Poa/getDataTrainingGoals/${id}/${
+      data.fecha_creacion.split(" ")[0]
+    }/${data.fecha_limite.split(" ")[0]}`
   );
   let data2 = await query2.json();
 
@@ -644,7 +699,9 @@ async function llenarCardQuintaMeta() {
 
   // ===================== TRAE LOS DATOS QUE SE ENCUENTRAN ENTRE ESAS FECHAS ES DECIR LAS METAS QUE ESTAN TERMINANDAS ===========
   let query2 = await fetch(
-    `${base_url}/Poa/getTrainedPersonnel/${id}/${data.fecha_creacion}/${data.fecha_limite}`
+    `${base_url}/Poa/getTrainedPersonnel/${id}/${data.fecha_creacion
+      .split(" ")
+      .join("---")}/${data.fecha_limite.split(" ").join("---")}`
   );
   let data2 = await query2.json();
 
@@ -868,4 +925,15 @@ async function historico(tipoOperacion, descripcionOperacion, estadoOperacion) {
     body: formData,
   });
   let data = await query.json();
+}
+
+function alertTimeOut(icon, text, timer) {
+  Swal.fire({
+    toast: true,
+    position: "top-end",
+    icon,
+    text,
+    showConfirmButton: false,
+    timer,
+  });
 }

@@ -9,6 +9,7 @@ let listaCard2 = document.getElementById("listaCard2");
 const titleCard = document.getElementById("titleCard");
 const titleCard2 = document.getElementById("titleCard2");
 let idCapturado = ""; //Captura el id incidencia de la card para ser usado
+let tipoCapturado = "";
 let textarea = document.getElementById("descripcion_solucion"); // esto es el input oculto
 let label = document.getElementById("label_solucion"); // label del input oculto
 
@@ -714,12 +715,17 @@ async function cardFinalizado() {
   listaCard2.innerHTML = `<div class='d-flex flex-column w-100'>${tab}${divs}</div>`;
 }
 
+let tipoEstadoTaskLst = "";
+
 //FUNCIÓN PARA LLENAR LA INFORMACIÓN CORRESPONDIENTE DEL MODAL
 async function llenarModal(id, tipo) {
   console.log(id, tipo);
   idCapturado = id;
+  tipoCapturado = tipo;
   let query;
   let data;
+
+  tipoEstadoTaskLst = tipo;
 
   // Determinar el tipo de entidad y hacer la consulta adecuada
   if (tipo === "incidente") {
@@ -893,7 +899,8 @@ formTask.addEventListener("submit", async (e) => {
   let btnClose = document.getElementById("btnClose");
   let formData = new FormData(formTask);
   let tipoEntidad = document.getElementById("tipoEntidad").value; // Obtener el tipo de entidad
-  formData.append("tipoEntidad", tipoEntidad); // Añadir el tipo al formData
+  formData.append("tipoEntidad", tipoCapturado); // Añadir el tipo al formData
+  // formData.append("tipoCapturado", tipoCapturado);
 
   // Obtener el estado de la tarea
   let query = await fetch(`${base_url}/TaskList/getStatus/${idCapturado}`, {
@@ -901,12 +908,16 @@ formTask.addEventListener("submit", async (e) => {
     body: formData,
   });
 
+  let data = await query.json();
+
+  console.log(data);
+
   // VERIFICAIÓN DEL ESTADO DE LA RESPUESTA DE LA CONSULTA
   if (query.ok) {
-    let data = await query.json();
     let value = data[0].estado;
-    console.log(data[0].estado);
-    let query2;
+    let query2 = "";
+
+    console.log(value);
 
     // Si está en estado "Pendiente", cambiar a "En Proceso"
     if (value === "Pendiente") {
@@ -921,9 +932,7 @@ formTask.addEventListener("submit", async (e) => {
       // ========================== HISTORICO ======================
       // CAPTURA DE DATOS PARA EL HISTORICO ========================
       let queryGetDatos = await fetch(
-        `${base_url}/TaskList/getData/${idCapturado}/${formData.get(
-          "tipoEntidad"
-        )}`
+        `${base_url}/TaskList/getData/${idCapturado}/${tipoCapturado}`
       );
       let dataGetDatos = await queryGetDatos.json();
       console.log("Datos: ", dataGetDatos);
@@ -940,17 +949,17 @@ formTask.addEventListener("submit", async (e) => {
 
       if (formData.get("tipoEntidad") == "incidente") {
         tipoOperacion = "Actualización";
-        descripcionOperacion = `La Incidencia: <strong>${dataGetDatos[0].nombre_tipo}</strong>, 
-        Con Fecha de Asignacion: <strong>${dataGetDatos[0].fecha_asignacion_formateada}</strong> 
-        Y Asignada al Equipo: <strong>${dataGetDatos[0].nombre_equipo}</strong> 
+        descripcionOperacion = `La Incidencia: <strong>${dataGetDatos.nombre_tipo}</strong>, 
+        Con Fecha de Asignacion: <strong>${dataGetDatos.fecha_asignacion_formateada}</strong> 
+        Y Asignada al Equipo: <strong>${dataGetDatos.nombre_equipo}</strong> 
         Cambio su estado a <strong>En Proceso</strong>`;
         estadoOperacion = 1;
         historico(tipoOperacion, descripcionOperacion, estadoOperacion);
       } else {
         tipoOperacion = "Actualización";
-        descripcionOperacion = `El Proyecto: <strong>${dataGetDatos[0].nombre_proyecto}</strong>, 
-        Con Fecha de Asignacion: <strong>${dataGetDatos[0].fecha_asignacion_formateada}</strong> 
-        Y Asignado al Equipo: <strong>${dataGetDatos[0].nombre_equipo}</strong> 
+        descripcionOperacion = `El Proyecto: <strong>${dataGetDatos.nombre_proyecto}</strong>, 
+        Con Fecha de Asignacion: <strong>${dataGetDatos.fecha_asignacion_formateada}</strong> 
+        Y Asignado al Equipo: <strong>${dataGetDatos.nombre_equipo}</strong> 
         Cambio su estado a <strong>En Proceso</strong>`;
         estadoOperacion = 1;
         historico(tipoOperacion, descripcionOperacion, estadoOperacion);
@@ -961,25 +970,26 @@ formTask.addEventListener("submit", async (e) => {
     } else if (value === "En Proceso") {
       // VALIDACION ===========================================
       let textArea = formTask.querySelectorAll("textarea");
+      if (tipoEstadoTaskLst === "incidente") {
+        if (textArea.item(0).value === "") {
+          alertTimeOut("error", "Campo descripción solucion vacío", 3000);
+          return;
+        }
 
-      if (textArea.item(0).value === "") {
-        alertTimeOut("error", "Campo descripción solucion vacío", 3000);
-        return;
-      }
-
-      if (
-        !validator.isLength(textArea.item(0).value, { min: 8, max: 200 }) ||
-        !validator.matches(
-          textArea.item(0).value,
-          /^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9@.,\-\_\s]+$/
-        )
-      ) {
-        alertTimeOut(
-          "error",
-          "Descripción solucion inválida, entre 8 y 200 caracteres",
-          3000
-        );
-        return;
+        if (
+          !validator.isLength(textArea.item(0).value, { min: 8, max: 200 }) ||
+          !validator.matches(
+            textArea.item(0).value,
+            /^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9@.,\-\_\s]+$/
+          )
+        ) {
+          alertTimeOut(
+            "error",
+            "Descripción solucion inválida, entre 8 y 200 caracteres",
+            3000
+          );
+          return;
+        }
       }
 
       // ======================================================
@@ -1006,9 +1016,9 @@ formTask.addEventListener("submit", async (e) => {
       if (formData.get("tipoEntidad") == "incidente") {
         tipoOperacion = "Actualización";
         descripcionOperacion = `La Incidencia: <strong>${
-          dataGetDatos[0].nombre_tipo
+          dataGetDatos.nombre_tipo
         }</strong>, 
-        Y Asignada al Equipo: <strong>${dataGetDatos[0].nombre_equipo}</strong> 
+        Y Asignada al Equipo: <strong>${dataGetDatos.nombre_equipo}</strong> 
         Cambio su estado a <strong>Finalizado</strong>, Bajo el Motivo: ${formData.get(
           "descripcion_solucion"
         )}`;
@@ -1017,9 +1027,9 @@ formTask.addEventListener("submit", async (e) => {
       } else {
         tipoOperacion = "Actualización";
         descripcionOperacion = `El Proyecto: <strong>${
-          dataGetDatos[0].nombre_proyecto
+          dataGetDatos.nombre_proyecto
         }</strong>, 
-        Y Asignado al Equipo: <strong>${dataGetDatos[0].nombre_equipo}</strong> 
+        Y Asignado al Equipo: <strong>${dataGetDatos.nombre_equipo}</strong> 
         Cambio su estado a <strong>Finalizado</strong>, Bajo el Motivo: ${formData.get(
           "descripcion_solucion"
         )}`;
@@ -1029,6 +1039,8 @@ formTask.addEventListener("submit", async (e) => {
       // =======================================================================
     }
     // VERIFICACIÓN DE ESTADO DE LA SEGUNDA CONSULTA
+    console.log(query2);
+
     if (query2 && query2.ok) {
       let response = await query2.json();
       let { status, msg, title } = response;

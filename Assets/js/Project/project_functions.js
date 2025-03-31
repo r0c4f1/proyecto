@@ -268,6 +268,51 @@ async function fillSelectOptions(selectElement) {
 async function assignProject(e, id_equipo, id_proyecto) {
   e.preventDefault();
 
+  let recurso1 = document.getElementById("recurso");
+  let cantidad1 = document.getElementById("cantRecurso1");
+  // let recurso2 = document.getElementById("recurso2");
+  // let cantidad2 = document.getElementById("cantidad2");
+  // let recurso3 = document.getElementById("recurso3");
+  // let cantidad3 = document.getElementById("cantidad3");
+  // let recurso4 = document.getElementById("recurso4");
+  // let cantidad4 = document.getElementById("cantidad4");
+  // let recurso5 = document.getElementById("recurso5");
+
+  const containerInputs = document
+    .getElementById("container")
+    .querySelectorAll("input");
+
+  const containerSelect = document
+    .getElementById("container")
+    .querySelectorAll("select");
+
+  if (recurso1.value === "" && cantidad1.value !== "") {
+    alertTimeOut("error", "Falta el recurso", 2000);
+    return;
+  }
+
+  if (recurso1.value !== "" && cantidad1.value === "") {
+    alertTimeOut("error", "Falta la cantidad", 2000);
+    return;
+  }
+
+  for (let i = 0; i < containerSelect.length; i++) {
+    const el = containerSelect[i];
+    const al = containerInputs[i];
+
+    let query = await fetch(`${base_url}/Resources/getResources/${el.value}`);
+    let data = await query.json();
+
+    if (parseInt(data.cantidad) < parseInt(al.value)) {
+      alertTimeOut(
+        "error",
+        `Recurso insuficiente: ${el.selectedOptions[0].textContent}`,
+        2000
+      );
+      return;
+    }
+  }
+
   // ============================== HISTORICO DE OPERACIONES =============
   let queryProyecto = await fetch(
     `${base_url}/Project/getProject/${id_proyecto}`
@@ -283,14 +328,6 @@ async function assignProject(e, id_equipo, id_proyecto) {
   const formData = new FormData();
   formData.append("id_equipo", id_equipo);
   formData.append("id_proyecto", id_proyecto);
-
-  const containerInputs = document
-    .getElementById("container")
-    .querySelectorAll("input");
-
-  const containerSelect = document
-    .getElementById("container")
-    .querySelectorAll("select");
 
   for (let i = 0; i < containerInputs.length; i++) {
     const el = containerInputs[i];
@@ -310,8 +347,9 @@ async function assignProject(e, id_equipo, id_proyecto) {
   let { status, title, msg } = await query.json();
 
   if (status) {
-    const myModal = new bootstrap.Modal("#addIncidentAssignment");
-    myModal.hide();
+    document.getElementById("btnCloseAddIncidentAssignment").click();
+    // const myModal = new bootstrap.Modal("#addIncidentAssignment");
+    // myModal.hide();
 
     Swal.fire({
       toast: true,

@@ -516,30 +516,30 @@ async function updateUser(e) {
   }
 }
 
-async function verifyId(e) {
-  let id = e.target;
+// async function verifyId(e) {
+//   let id = e.target;
 
-  const formData = new FormData();
+//   const formData = new FormData();
 
-  formData.append("id_usuario", id.value);
+//   formData.append("id_usuario", id.value);
 
-  let query = await fetch(`${base_url}/Users/verifyId`, {
-    method: "POST",
-    body: formData,
-  });
+//   let query = await fetch(`${base_url}/Users/verifyId`, {
+//     method: "POST",
+//     body: formData,
+//   });
 
-  let { status, msg } = await query.json();
+//   let { status, msg } = await query.json();
 
-  if (!status) {
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: msg,
-      showConfirmButton: false,
-      timer: 1500,
-    });
-  }
-}
+//   if (!status) {
+//     Swal.fire({
+//       icon: "error",
+//       title: "Error",
+//       text: msg,
+//       showConfirmButton: false,
+//       timer: 1500,
+//     });
+//   }
+// }
 
 function changeType() {
   const visible = document.getElementById("visible");
@@ -712,66 +712,67 @@ async function verifyId(e) {
     return;
   }
 
-  let data = [
-    {
-      profile_id: "184",
-      profile_id_str: "000184",
-      customcode: "9302400018410",
-      nationality: "V",
-      nationality_str: "Venezolano",
-      pin: "15740816",
-      pin_str: "V-15740816",
-      fullname: "LUIS MIGUEL DURAN ORIHUELA",
-      shortname: "LUIS M. DURAN O.",
-      firstnames: "LUIS MIGUEL",
-      lastnames: "DURAN ORIHUELA",
-      sex: "F",
-      sex_str: "Femenino",
-      type: "15",
-      type_str: ["Graduado", "Administrativo"],
-      profile_image_url:
-        "http://api.uptos.edu.ve/directory/images/6cdd60ea0045eb7a6ec44c54d29ed402_20230329104331.jpg",
-      status: "1",
-      status_str: "Activo",
-      create: "2013-05-06 13:51:08.140064",
-      create_str: "lun 06 may 2013, 13:51pm",
-      last_update: "2024-06-11 03:02:28.100692",
-      last_update_str: "mar 11 jun 2024, 03:02am",
-      home: "1",
-      additional:
-        "INGENIERIA EN INFORMATICA,OFICINA DE TECNOLOGIA DE INFORMACION Y COMUNICACION",
-      ldap_account: "",
-    },
-  ];
+  let data = await fetch(`${base_url}/Api/getApi`);
+  let query = await data.json();
 
-  try {
-    const params = {
-      pin: id /* datos a consultar 16818597 13942458 15934877 16701874  */,
-      token: "123ssss",
-    };
+  for (let i = 0; i < query[0].data.length; i++) {
+    const el = query[0].data[i];
 
-    const resp = await consulta("/directory/search_person.json", params, "GET");
+    if (el.pin === id) {
+      let formAddUsers = document.getElementById("formAddUsers");
+      let inputs = formAddUsers.querySelectorAll("input");
+      let selects = formAddUsers.querySelectorAll("select");
 
-    if (resp[0].data.length === 0) {
-      alertTimeOut("error", "Cédula no encontrada", 3000);
-      return;
+      inputs.item(2).value = el.firstnames;
+      inputs.item(3).value = el.lastnames;
+      selects.item(1).value = el.sex;
+
+      break;
     }
+  }
 
+  if (inputs.item(2).value === "") {
     let formAddUsers = document.getElementById("formAddUsers");
     let inputs = formAddUsers.querySelectorAll("input");
     let selects = formAddUsers.querySelectorAll("select");
 
-    inputs.item(2).value = resp[0].data[0].firstnames;
-    inputs.item(3).value = resp[0].data[0].lastnames;
-    selects.item(1).value = resp[0].data[0].sex;
+    inputs.item(2).value = "";
+    inputs.item(3).value = "";
 
-    console.log(resp);
-  } catch (e) {
-    alertTimeOut("error", "Sin acceso al servidor", 3000);
-    console.log(inputs);
-
+    alertTimeOut("error", "Usuario no encontrado", 2000);
     return;
   }
+
+  // console.log("hola");
+
+  // try {
+  //   const params = {
+  //     pin: id /* datos a consultar 16818597 13942458 15934877 16701874  */,
+  //     token: "123ssss",
+  //   };
+
+  //   const resp = await consulta("/directory/search_person.json", params, "GET");
+
+  //   if (resp[0].data.length === 0) {
+  //     alertTimeOut("error", "Cédula no encontrada", 3000);
+  //     return;
+  //   }
+
+  //   let formAddUsers = document.getElementById("formAddUsers");
+  //   let inputs = formAddUsers.querySelectorAll("input");
+  //   let selects = formAddUsers.querySelectorAll("select");
+
+  //   inputs.item(2).value = resp[0].data[0].firstnames;
+  //   inputs.item(3).value = resp[0].data[0].lastnames;
+  //   selects.item(1).value = resp[0].data[0].sex;
+
+  //   console.log(resp);
+  // } catch (e) {
+  //   alertTimeOut("error", "Sin acceso al servidor", 3000);
+  //   console.log(inputs);
+
+  //   return;
+  // }
 
   // const formData = new FormData();
 
@@ -791,5 +792,5 @@ async function verifyId(e) {
   //     text: msg,
   //     showConfirmButton: false,
   //     timer: 1500,
-  //   }); // }
+  //    }); }
 }
