@@ -28,7 +28,7 @@ $currentUserId = $_SESSION['id_usuario'];
             <h3 class="main-title">Lista de Cursos</h3>
             <?php
             if ($_SESSION['nivel'] != 0) { // Mostrar "Opciones" si el nivel NO es 0
-            ?><button class="btn btn-primary" onclick="modalAddTraining()">Agregar Capacitación</button> <?php
+            ?><button class="btn btn-primary" onclick="modalAddTraining()" style="<?php echo $nivelUsuario == 0 ? 'display:none;' : ''; ?>">Agregar Capacitación</button> <?php
                                                                                                             }
                                                                                                                 ?>
         </header>
@@ -41,13 +41,8 @@ $currentUserId = $_SESSION['id_usuario'];
                         <th>Tipo</th>
                         <th>Fecha</th>
                         <th>Duración</th>
-                        <?php
-                        if ($_SESSION['nivel'] != 0) { // Mostrar "Opciones" si el nivel NO es 0
-                        ?>
-                            <th>Opciones</th>
-                        <?php
-                        }
-                        ?>
+                        <th style="<?php echo $nivelUsuario == 0 ? 'display:none;' : ''; ?>">Opciones</th>
+                       
                     </tr>
                 </thead>
             </table>

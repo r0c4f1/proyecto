@@ -82,18 +82,30 @@
                     </div>
                     <div class="d-flex">
                         <ul class="col-3">
-                            <li class="list-group-item fw-bold mb-2">Enero</li>
-                            <li class="list-group-item fw-bold mb-2">Febrero</li>
-                            <li class="list-group-item fw-bold mb-2">Marzo</li>
-                            <li class="list-group-item fw-bold mb-2">Abril</li>
-                            <li class="list-group-item fw-bold mb-2">Mayo</li>
-                            <li class="list-group-item fw-bold mb-2">Junio</li>
-                            <li class="list-group-item fw-bold mb-2">Julio</li>
-                            <li class="list-group-item fw-bold mb-2">Agosto</li>
-                            <li class="list-group-item fw-bold mb-2">Septiembre</li>
-                            <li class="list-group-item fw-bold mb-2">Octubre</li>
-                            <li class="list-group-item fw-bold mb-2">Noviembre</li>
-                            <li class="list-group-item fw-bold">Diciembre</li>
+                            <li class="list-group-item fw-bold mb-2 cursor-pointer" style="cursor:pointer;"
+                                onclick="getMonthIncident(1, 'Enero')">Enero</li>
+                            <li class="list-group-item fw-bold mb-2 cursor-pointer" style="cursor:pointer;"
+                                onclick="getMonthIncident(2, 'Febrero')">Febrero</li>
+                            <li class="list-group-item fw-bold mb-2 cursor-pointer" style="cursor:pointer;"
+                                onclick="getMonthIncident(3, 'Marzo')">Marzo</li>
+                            <li class="list-group-item fw-bold mb-2 cursor-pointer" style="cursor:pointer;"
+                                onclick="getMonthIncident(4, 'Abril')">Abril</li>
+                            <li class="list-group-item fw-bold mb-2 cursor-pointer" style="cursor:pointer;"
+                                onclick="getMonthIncident(5, 'Mayo')">Mayo</li>
+                            <li class="list-group-item fw-bold mb-2 cursor-pointer" style="cursor:pointer;"
+                                onclick="getMonthIncident(6, 'Junio')">Junio</li>
+                            <li class="list-group-item fw-bold mb-2 cursor-pointer" style="cursor:pointer;"
+                                onclick="getMonthIncident(7, 'Julio')">Julio</li>
+                            <li class="list-group-item fw-bold mb-2 cursor-pointer" style="cursor:pointer;"
+                                onclick="getMonthIncident(8, 'Agosto')">Agosto</li>
+                            <li class="list-group-item fw-bold mb-2 cursor-pointer" style="cursor:pointer;"
+                                onclick="getMonthIncident(9, 'Septiembre')">Septiembre</li>
+                            <li class="list-group-item fw-bold mb-2 cursor-pointer" style="cursor:pointer;"
+                                onclick="getMonthIncident(10, 'Octubre')">Octubre</li>
+                            <li class="list-group-item fw-bold mb-2 cursor-pointer" style="cursor:pointer;"
+                                onclick="getMonthIncident(11, 'Noviembre')">Noviembre</li>
+                            <li class="list-group-item fw-bold cursor-pointer" style="cursor:pointer;"
+                                onclick="getMonthIncident(12, 'Diciembre')">Diciembre</li>
                         </ul>
                         <ul id="listaPendientes" class="col-3 text-danger text-center">
                             <li class="list-group-item fw-bold mb-2"></li>

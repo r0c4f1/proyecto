@@ -6,6 +6,7 @@ sideBar();
 <div class="header-wrap">
         <div class="header-title">
             <h2>Incidencias</h2>
+            <span>Incidencias Reportadas</span>
         </div>
         <div class="user-info">
             <div class="username">

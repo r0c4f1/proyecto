@@ -97,6 +97,7 @@ class Incidents extends Controllers {
             $estado = isset($_POST['estado']) ? strClean($_POST['estado']) : null;
             $recurso1 = isset($_POST['recurso1']) ? strClean($_POST['recurso1']) : null;
             $cantidad1 = isset($_POST['cantidad1']) ? strClean($_POST['cantidad1']) : 0;
+            $requestUser = "";
     
             // Verificación de campos obligatorios
             if ($id_equipo && $id_incidencia && $fecha_asignacion && $estado && $recurso1 && $cantidad1) {

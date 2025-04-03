@@ -1,11 +1,13 @@
 <?php headerAdmin($data);
 sideBar();
+$nivelUsuario = $_SESSION['nivel'];
 ?>
 
 <main class="main">
     <div class="header-wrap">
         <div class="header-title">
             <h2>Equipos</h2>
+            <span>Equipos OTIC</span>
         </div>
         <div class="user-info">
             <div class="username">
@@ -19,7 +21,7 @@ sideBar();
             
                 <header class="d-flex justify-content-between align-items-center">
                 <h3 class="main-title">Equipos de Trabajo</h3>
-                    <button class="btn btn-primary" onclick="modalAddTeams()">Agregar Equipo</button>
+                    <button class="btn btn-primary" onclick="modalAddTeams()" style="<?php echo $nivelUsuario == 0 ? 'display:none;' : ''; ?>">Agregar Equipo</button>
                 </header>
                 <hr>
                 <section class="col-6 d-flex justify-content-right">
@@ -36,7 +38,7 @@ sideBar();
 
     </section>
 
-    <section class="card-container">
+    <section class="card-container" style="<?php echo $nivelUsuario == 0 ? 'display:none;' : ''; ?>">
     <header class="d-flex justify-content-between align-items-center">
     <h3 class="main-title">Añadir a Equipo</h3>
                     

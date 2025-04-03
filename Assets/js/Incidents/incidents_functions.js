@@ -295,18 +295,19 @@ async function updateInput(id_tipo) {
 }
 
 function recargaData() {
-  selectAsignados.value = 0;
+  if (selectAsignados) selectAsignados.value = 0;
 
-  temaAsignacion.textContent = " Asignar Equipos";
-  listaAsignados.innerHTML = "";
-  buscador.disabled = true;
-  fillSelect();
+  if (selectAsignados) temaAsignacion.textContent = " Asignar Equipos";
+  if (selectAsignados) listaAsignados.innerHTML = "";
+  if (selectAsignados) buscador.disabled = true;
+  if (selectAsignados) fillSelect();
 }
 
 async function fillSelect() {
   let query = await fetch(`${base_url}/Incidents/getIncidents`);
   let data = await query.json();
-  selectAsignados.innerHTML = `
+  if (selectAsignados)
+    selectAsignados.innerHTML = `
       <option value='0'>---</option>
     `;
 
@@ -316,7 +317,7 @@ async function fillSelect() {
     option.value = data[i].id_incidencia;
     option.textContent = data[i].nombre_tipo;
     fragment.appendChild(option);
-    selectAsignados.appendChild(fragment);
+    if (selectAsignados) selectAsignados.appendChild(fragment);
   }
 
   temaAsignacion.textContent = `  Asignar Equipos`;
@@ -443,22 +444,23 @@ async function cancelarIncidencia(id, motivo) {
   }
 }
 
-selectAsignados.addEventListener("change", async (e) => {
-  //SELECTOR DE INCIDENCIAS
-  let option = selectAsignados.selectedOptions[0].textContent;
-  globalSubtipo = selectAsignados.selectedOptions[0].value; // CAPTURA EL ID DE LA INCIDENCIA PARA HACER USO DEL SUBTIPO
-  console.log(globalSubtipo);
-  datosFiltro = [];
+if (selectAsignados)
+  selectAsignados.addEventListener("change", async (e) => {
+    //SELECTOR DE INCIDENCIAS
+    let option = selectAsignados.selectedOptions[0].textContent;
+    globalSubtipo = selectAsignados.selectedOptions[0].value; // CAPTURA EL ID DE LA INCIDENCIA PARA HACER USO DEL SUBTIPO
+    console.log(globalSubtipo);
+    datosFiltro = [];
 
-  if (option == "---") {
-    temaAsignacion.textContent = "(Vacío) Asignados";
-    listaAsignados.innerHTML = "";
-    buscador.disabled = true;
-    return;
-  }
-  let type = 1;
-  llenarCard(type);
-});
+    if (option == "---") {
+      temaAsignacion.textContent = "(Vacío) Asignados";
+      listaAsignados.innerHTML = "";
+      buscador.disabled = true;
+      return;
+    }
+    let type = 1;
+    llenarCard(type);
+  });
 
 formAddIncident.addEventListener("submit", async (e) => {
   e.preventDefault();

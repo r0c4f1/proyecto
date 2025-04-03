@@ -58,15 +58,13 @@
                     <div class="row p-3">
                         <label class="col-12 mb-4">
                             Título
-                            <input id="nombre" type="text" name="nombre" class="form-control" placeholder="Título"
-                                maxlength="255">
+                            <input id="nombre" type="text" name="nombre" class="form-control" placeholder="Título" maxlength="255">
                         </label>
 
                         <label class="col-12 mb-4">
                             Descripción
                             <div class="form-floating">
-                                <textarea class="form-control" name="descripcion" style="height: 100px"
-                                    maxlength="10"></textarea>
+                                <textarea class="form-control" name="descripcion" style="height: 100px" maxlength="10"></textarea>
                             </div>
                         </label>
 
@@ -102,7 +100,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Usuarios del equipo</h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Integrantes del equipo</h1>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                     aria-label="Close"></button>
             </div>
@@ -140,8 +138,8 @@
                             <div class="col-5 ms-2">
                                 <label>
                                     Cantidad
-                                    <input type="number" name="cantidad1" id="cantRecurso1" min="1" max="1000"
-                                        class="form-control" placeholder="10">
+                                    <input type="number" name="cantidad1" id="cantRecurso1" min="1" max="1000" class="form-control"
+                                        placeholder="10" >
                                 </label>
                             </div>
                         </div>
@@ -158,7 +156,8 @@
                 <div class="modal-footer d-flex aling-content-center justify-content-center">
                     <button type="button" class="btn btn-secondary" id="btnCloseAddIncidentAssignment"
                         data-bs-dismiss="modal">Cerrar</button>
-                    <button type="submit" class="btn btn-primary" id="btnAddProjectAssignment">Asignar</button>
+                    <button type="submit" class="btn btn-primary" id="btnAddProjectAssignment"
+                        data-bs-dismiss="modal">Asignar</button>
                 </div>
             </form>
         </div>

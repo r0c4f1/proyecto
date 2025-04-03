@@ -13,6 +13,7 @@ $nivelUsuario = $_SESSION['nivel'];
         <div class="header-title">
 
             <h2>Usuarios</h2>
+            <span>Empleados de la OTIC</span>
 
 
         </div>

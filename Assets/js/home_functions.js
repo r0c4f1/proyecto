@@ -400,7 +400,9 @@ async function manejadorProyecto(etiqueta, valor) {
   // ----- OBTIENE LOS PROYECTOS POR TITULO Y SU PROGRESO -----
   let queryProjectStates = "";
   if (userLevel >= 1) {
-    queryProjectStates = await fetch(`${base_url}/Home/getProjectStates`);
+    queryProjectStates = await fetch(
+      `${base_url}/Home/getProjectStates/${userLevel}/${unidad}/0`
+    );
   } else {
     queryProjectStates = await fetch(
       `${base_url}/Home/getProjectPerUserStates`
@@ -473,111 +475,112 @@ async function manejadorProyecto(etiqueta, valor) {
 
 async function descripcionProyecto(id_proyecto, nombre) {
   let queryProject = await fetch(
-    `${base_url}/Home/getProjectStates/${id_proyecto}`
+    `${base_url}/Home/getProjectStates/${userLevel}/${unidad}/${id_proyecto}`
   );
   let dataProject = await queryProject.json();
 
-  console.log("Datos del servidor:", dataProject);
-
-  const project = dataProject.find((p) => p.id_proyecto === id_proyecto);
-  let miembrosEquipo = "";
-
-  for (let i = 0; i < project.datosUsuariosEquipo.length; i++) {
-    const el = project.datosUsuariosEquipo[i];
-    let nombre = el.nombres.split(" ")[0];
-    let apellido = el.apellidos.split(" ")[0];
-
-    let avatar = `${nombre[0]}${apellido[0]}`;
-
-    miembrosEquipo += ` <div class="d-flex align-items-center p-2 border rounded mb-2">
-            <div class="avatar rounded me-3">${avatar}</div>
-            <div>
-              <p class="mb-0 fw-medium">${nombre} ${apellido}</p>
-              <span class="badge bg-light text-dark border w-100">${el.id_usuario}</span>
-              <span class="badge bg-light text-dark border w-100">${el.telefono}</span>
-              <span class="badge bg-light text-dark border w-100">${el.email}</span>
-            </div>
-          </div>`;
+  if (!dataProject || !Array.isArray(dataProject)) {
+    Swal.fire(
+      "Error",
+      "El servidor devolvió una respuesta inválida o no hay datos disponibles",
+      "error"
+    );
+    return;
   }
 
+  const project = dataProject.find((p) => p.id_proyecto === id_proyecto);
+  if (!project) {
+    Swal.fire("Error", "No se encontró el proyecto especificado", "error");
+    return;
+  }
+  console.log("Miembros del equipo:", project.datosUsuariosEquipo);
+
+  let miembrosEquipo = "";
+  if (
+    !Array.isArray(project.datosUsuariosEquipo) ||
+    project.datosUsuariosEquipo.length === 0
+  ) {
+    miembrosEquipo = `<p class="text-muted">No hay miembros en el equipo</p>`;
+  } else {
+    for (let i = 0; i < project.datosUsuariosEquipo.length; i++) {
+      const el = project.datosUsuariosEquipo[i];
+      let nombre = el.nombres.split(" ")[0];
+      let apellido = el.apellidos.split(" ")[0];
+      let avatar = `${nombre[0]}${apellido[0]}`;
+
+      miembrosEquipo += ` <div class="d-flex align-items-center p-2 border rounded mb-2">
+                <div class="avatar rounded me-3">${avatar}</div>
+                <div>
+                  <p class="mb-0 fw-medium">${nombre} ${apellido}</p>
+                  <span class="badge bg-light text-dark border w-100">${el.id_usuario}</span>
+                  <span class="badge bg-light text-dark border w-100">${el.telefono}</span>
+                  <span class="badge bg-light text-dark border w-100">${el.email}</span>
+                </div>
+              </div>`;
+    }
+  }
+
+  let descripcion = project.descripcion || "No hay descripción disponible";
+  let fechaFin =
+    !project.fecha_fin || project.fecha_fin === "null"
+      ? "Sin fecha de finalización"
+      : project.fecha_fin;
+
   let card = /* html */ `
-  <div class="container">
-    <div class="card mx-auto" style="max-width: 500px;">
-      <div class="card-header text-center bg-white border-bottom-0 pt-4">
-        <h4 class="fw-bold text-center w-100">${project.nombre}</h4>
+    <div class="container">
+      <div class="card mx-auto" style="max-width: 500px;">
+        <div class="card-header text-center bg-white border-bottom-0 pt-4">
+          <h4 class="fw-bold text-center w-100">${project.nombre}</h4>
         </div>
-        
         <div class="card-body">
-        <!-- Project Description -->
-        <p class="text-muted">Descripción del Proyecto</p>
-        <div class="bg-light p-3 rounded mb-3">
-          <p class="text-center mb-0">${project.descripcion}</p>
-        </div>
-        
-        <!-- Project Dates -->
-        <div class="mb-3">
-          <div class="d-flex align-items-center mb-2">
-            <i class="bi bi-calendar me-2 text-secondary"></i>
-            <div>
-              <p class="mb-0 small fw-medium text-start">Fecha inicio:</p>
-              <p class="mb-0 fs-6">${project.fecha_inicio}</p>
+          <p class="text-muted">Descripción del Proyecto</p>
+          <div class="bg-light p-3 rounded mb-3">
+            <p class="text-center mb-0">${descripcion}</p>
+          </div>
+          <div class="mb-3">
+            <div class="d-flex align-items-center mb-2">
+              <i class="bi bi-calendar me-2 text-secondary"></i>
+              <div>
+                <p class="mb-0 small fw-medium text-start">Fecha inicio:</p>
+                <p class="mb-0 fs-6">${project.fecha_inicio}</p>
+              </div>
+            </div>
+            <div class="d-flex align-items-center mb-3">
+              <i class="bi bi-clock me-2 text-secondary"></i>
+              <div>
+                <p class="mb-0 small fw-medium text-start">Fecha Final:</p>
+                <p class="mb-0 text-start fs-6">${fechaFin}</p>
+              </div>
             </div>
           </div>
-          
-          <div class="d-flex align-items-center mb-3">
-            <i class="bi bi-clock me-2 text-secondary"></i>
-            <div>
-              <p class="mb-0 small fw-medium text-start">Fecha Final:</p>
-              <p class="mb-0 text-start fs-6">${
-                !project.fecha_fin || project.fecha_fin === "null"
-                  ? "Sin fecha de finalización"
-                  : project.fecha_fin
-              }</p>
-            </div>
+          <button class="btn btn-outline-secondary w-100 mb-3" id="teamToggle">
+            <i class="bi bi-people"></i> Ver Equipo
+          </button>
+          <div class="team-section" id="teamSection">
+            ${miembrosEquipo}
           </div>
         </div>
-        
-        <!-- Team Toggle Button -->
-        <button class="btn btn-outline-secondary w-100 mb-3" id="teamToggle">
-          <i class="bi bi-people"></i> Ver Equipo
-        </button>
-        
-        <!-- Team Members Section -->
-     
-           <div class="team-section" id="teamSection">
-          <h5 class="d-flex align-items-center mb-3">
-            <i class="bi bi-people me-2"></i> Miembros del Equipo
-          </h5>
-          
-          <!-- Team Member 1 -->
-          ${miembrosEquipo}
-          
-      
-        </div>
-         
       </div>
-      
     </div>
-  </div>
-`;
+  `;
 
   Swal.fire({
     html: card,
     confirmButtonText: "Cerrar",
     confirmButtonColor: "#6c757d",
   });
-  document.getElementById("teamToggle").addEventListener("click", function () {
-    const teamSection = document.getElementById("teamSection");
-    const button = document.getElementById("teamToggle");
 
-    teamSection.classList.toggle("show");
+  const teamToggle = document.getElementById("teamToggle");
+  if (teamToggle) {
+    teamToggle.addEventListener("click", function () {
+      const teamSection = document.getElementById("teamSection");
+      teamSection.classList.toggle("show");
 
-    if (teamSection.classList.contains("show")) {
-      button.innerHTML = '<i class="bi bi-people me-2"></i> Ocultar Equipo';
-    } else {
-      button.innerHTML = '<i class="bi bi-people me-2"></i> Ver Equipo';
-    }
-  });
+      teamToggle.innerHTML = teamSection.classList.contains("show")
+        ? '<i class="bi bi-people me-2"></i> Ocultar Equipo'
+        : '<i class="bi bi-people me-2"></i> Ver Equipo';
+    });
+  }
 }
 
 async function descripcionProyectoPorMes(id_proyecto, nombre) {
@@ -697,7 +700,7 @@ async function manejadorIncidenciasPorMes(etiqueta, valor) {
 
   // Realiza la solicitud para obtener las tareas por mes
   let queryTasksPerMonth = await fetch(
-    `${base_url}/Home/getTasksPerMonthIndicator`
+    `${base_url}/Home/getTasksPerMonthIndicator/${userLevel}/${unidad}`
   );
   let dataTasksPerMonth = await queryTasksPerMonth.json();
 
@@ -836,6 +839,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     "Personal",
     manejador
   );
+
   // ----- GRAFICO INCIDENCIAS PROYECTOS TOTALES
   if (userLevel != 0) {
     let queryIndicatorProject = await fetch(
@@ -843,12 +847,20 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     );
     let dataProject = await queryIndicatorProject.json();
 
-    let pendiente =
-      dataProject.find((item) => item.estado === "Pendiente")?.cantidad || 0;
-    let enProceso =
-      dataProject.find((item) => item.estado === "En Proceso")?.cantidad || 0;
-    let finalizado =
-      dataProject.find((item) => item.estado === "Finalizado")?.cantidad || 0;
+    let pendiente = 0;
+    let enProceso = 0;
+    let finalizado = 0;
+
+      dataProject.forEach((item) => {
+        if(item.estado === "Pendiente") {
+          pendiente++;
+        }else if(item.estado === "En Proceso") {
+          enProceso++;
+        }else {
+          finalizado++;
+        }
+      })
+      
 
     estadisticas(
       ["Pendiente", "En Proceso", "Finalizado"],
@@ -913,8 +925,9 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   );
 
   //----- GRAFICO INCIDENCIAS TOTALES
-  let queryIndicatorTasks = await fetch(
-    `${base_url}/Home/getAllTasksIndicator`
+  if(userLevel > 0) {
+     let queryIndicatorTasks = await fetch(
+    `${base_url}/Home/getAllTasksIndicator/${userLevel}/${unidad}`
   );
   let dataTasks = await queryIndicatorTasks.json();
 
@@ -938,6 +951,8 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     manejadorIncidenciasPorMes
   );
 
+  }
+ 
   habilitarChart();
 });
 
@@ -974,7 +989,6 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     (avgIncidentResolution.textContent = `${conversion.horas} Hora ${conversion.minutos} Minutos`);
 
   // Usa la variable "conversion" en lugar de "resultado"
-  console.log(`Horas: ${conversion.horas}, Minutos: ${conversion.minutos}`);
 
   // ----- OBTIENE EL PROMEDIO DE TIEMPO QUE TOMA RESOLVER UNA INCIDENCIA CALCULANDO A TODOS LOS USUARIOS O EQUIPOS -----
   let queryTotalAvgIncidents = await fetch(
@@ -988,10 +1002,6 @@ document.addEventListener("DOMContentLoaded", async (e) => {
 
   document.getElementById("totalAvgIncidentResolution") &&
     (totalAvgIncidentResolution.textContent = `${totalConversion.horas} Hora ${totalConversion.minutos} Minutos`);
-
-  console.log(
-    `Horas: ${totalConversion.horas}, Minutos: ${totalConversion.minutos}`
-  );
 
   // ----- OBTIENE PORCENTAJE DE RECURSOS USADOS -----
   let queryAvgResourses = await fetch(`${base_url}/Home/getAvgResourses`);
@@ -1041,8 +1051,6 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   );
   let dataTeamTopIncidents = await queryTeamTopIncidents.json();
   let iconTeamTopIncidents = document.getElementById("teamIncidents");
-
-  console.log("incidentes", dataTeamTopIncidents);
 
   if (dataTeamTopIncidents) {
     teamTopIncidents.textContent = `${dataTeamTopIncidents.nombre_equipo} - Incidencias finalizadas: ${dataTeamTopIncidents.max_finalizado}`;
@@ -1123,7 +1131,7 @@ function convertirHorasDecimal(decimalHours) {
 // ----- MUESTRA EL PROMEDIO DE LAS INCIDENCIAS POR USUARIO O EQUIPO -----
 async function alertaPromedioIncidenciasPorUsuario() {
   let queryAvgIncidentsIndicatorGroupByTeam = await fetch(
-    `${base_url}/Home/getAvgIncidentsIndicatorGroupByTeam`
+    `${base_url}/Home/getAvgIncidentsIndicatorGroupByTeam/${userLevel}/${unidad}`
   );
   let dataAvgIncidentsIndicatorGroupByTeam =
     await queryAvgIncidentsIndicatorGroupByTeam.json();
@@ -1415,7 +1423,7 @@ async function alertaPorcentajeRecursosUsados() {
 
 async function alertaEquipoConMasIncidenciasCompletadas() {
   let queryTeamsPerIncidents = await fetch(
-    `${base_url}/Home/getTeamsPerIncidents`
+    `${base_url}/Home/getTeamsPerIncidents/${userLevel}/${unidad}`
   );
   let dataTeamsPerIncidents = await queryTeamsPerIncidents.json();
 
@@ -1776,8 +1784,6 @@ async function alertaParticipanteEnCapacitacion(id_capacitacion) {
   let dataUserInTraining = await queryUserInTraining.json();
 
   datosFiltro.push(...dataUserInTraining);
-
-  console.log(dataUserInTraining);
 
   let card = `
   <div class="d-flex align-items-center mb-2 border-bottom border-primary">
@@ -2273,7 +2279,6 @@ async function medirVarianza() {
 
   ///////////////////
   meses = dataVarianzaIncidencias.map((item) => item.incidencias_finalizadas);
-  console.log(meses);
 
   let year = dataVarianzaIncidenciasYear.map(
     (item) => item.incidencias_finalizadas
@@ -2357,10 +2362,8 @@ async function medirVarianzaPorcentajeCapacitacion() {
 
   ///////////////////
   meses = dataVarianzaCapacitacion.map((item) => item.participacion_actual);
-  console.log(meses);
 
   years = dataVarianzaCapacitacionYear.map((item) => item.participacion_actual);
-  // console.log(incidenciasYear);
 
   anios = dataVarianzaCapacitacionYear.map((item) => item.año);
 
@@ -2471,7 +2474,6 @@ async function medirVarianzaTiempoIncidencia() {
       .replace("h", "")
       .replace("m", "")
       .replace("s", "");
-    console.log(tiempo);
 
     let [hora, minuto, segundo] = tiempo.split(" ");
 
@@ -2689,8 +2691,6 @@ async function medirVarianzaMantenimiento() {
   meses = dataVarianzaMantenimiento.map(
     (item) => item.mantenimientos_finalizados
   );
-
-  console.log(meses);
 
   years = dataVarianzaMantenimientoYear.map(
     (item) => item.mantenimientos_finalizados
@@ -3071,8 +3071,6 @@ function ctx5Function(event) {
     if (statusIdVarianza === 0) {
       data = datosVarianzaIncidencia[indice];
     } else {
-      console.log(datosVarianzaIncidenciaYear);
-
       data = datosVarianzaIncidenciaYear.filter(
         (el) => el.anio === etiqueta
       )[0];
@@ -3124,8 +3122,6 @@ if (ctx6 && ctx6.offsetParent !== null)
         data = datosVarianzaCapacitacionesYear.filter(
           (el) => el.año === etiqueta
         )[0];
-
-        console.log(data);
       }
 
       Swal.fire({
@@ -3160,8 +3156,6 @@ if (ctx7 && ctx7.offsetParent !== null)
       const etiqueta = myChartTiempoIncidencias.data.labels[puntoIndice];
       const valor = myChartTiempoIncidencias.data.datasets[0].data[puntoIndice];
 
-      console.log(datosTiempoPromedioFinalizacionIncidencias);
-
       let indice = mesesDelAnio.indexOf(etiqueta);
       let data = "";
 
@@ -3171,8 +3165,6 @@ if (ctx7 && ctx7.offsetParent !== null)
         data = datosTiempoPromedioFinalizacionIncidenciasYear.filter(
           (el) => el.Año === etiqueta
         )[0];
-
-        console.log(data);
       }
 
       Swal.fire({
@@ -3212,8 +3204,6 @@ if (ctx8 && ctx8.offsetParent !== null)
       true
     );
 
-    console.log("hola");
-
     if (puntos.length) {
       const puntoIndice = puntos[0].index;
       const etiqueta =
@@ -3231,8 +3221,6 @@ if (ctx8 && ctx8.offsetParent !== null)
         data = datosTiempoPromedioAsignacionIncidenciasYear.filter(
           (el) => el.anio === etiqueta
         )[0];
-
-        console.log(data);
       }
 
       Swal.fire({
@@ -3272,9 +3260,6 @@ if (ctx9 && ctx9.offsetParent !== null)
       const valor =
         myChartMantenimientoVariance.data.datasets[0].data[puntoIndice];
 
-      console.log(etiqueta, valor);
-      console.log(datosVarianzaMantenimientosGraficoYear);
-
       let indice = mesesDelAnio.indexOf(etiqueta);
       let data = "";
 
@@ -3284,8 +3269,6 @@ if (ctx9 && ctx9.offsetParent !== null)
         data = datosVarianzaMantenimientosGraficoYear.filter(
           (el) => el.Anio === etiqueta
         )[0];
-
-        console.log(data);
       }
 
       Swal.fire({
@@ -3305,10 +3288,10 @@ if (ctx9 && ctx9.offsetParent !== null)
   });
 
 async function getMonthIncident(mesId, mes) {
-  let queryIncident = await fetch(`${base_url}/Home/getMonthIncident/${mesId}`);
+  let queryIncident = await fetch(
+    `${base_url}/Home/getMonthIncident/${mesId}/${userLevel}/${unidad}`
+  );
   let dataIncident = await queryIncident.json();
-
-  console.log(dataIncident);
 
   let btn = document.getElementById("btnCloseModalIncidenciasPorMes");
   btn.click();
@@ -3320,11 +3303,70 @@ async function getMonthIncident(mesId, mes) {
   for (let i = 0; i < dataIncident.length; i++) {
     const el = dataIncident[i];
 
+  
+
     if (el.estado === "Pendiente") {
+      console.log(el.fecha_asignacion);
+         el.fecha_asignacion = `${el.fecha_asignacion
+        .split(" ")[0]
+        .split("-")
+        .reverse()
+        .join("-")} ${el.fecha_asignacion.split(" ")[1]}`;
+
+      el.fecha_reporte = `${el.fecha_reporte
+        .split(" ")[0]
+        .split("-")
+        .reverse()
+        .join("-")} ${el.fecha_reporte.split(" ")[1]}`;
       datosPendientes.push(el);
     } else if (el.estado === "En Proceso") {
+         el.fecha_asignacion = `${el.fecha_asignacion
+        .split(" ")[0]
+        .split("-")
+        .reverse()
+        .join("-")} ${el.fecha_asignacion.split(" ")[1]}`;
+
+      el.fecha_reporte = `${el.fecha_reporte
+        .split(" ")[0]
+        .split("-")
+        .reverse()
+        .join("-")} ${el.fecha_reporte.split(" ")[1]}`;
+
+         el.fecha_inicio = `${el.fecha_inicio
+        .split(" ")[0]
+        .split("-")
+        .reverse()
+        .join("-")} ${el.fecha_inicio.split(" ")[1]}`;
+
+    
       datosEnProceso.push(el);
     } else {
+         el.fecha_asignacion = `${el.fecha_asignacion
+        .split(" ")[0]
+        .split("-")
+        .reverse()
+        .join("-")} ${el.fecha_asignacion.split(" ")[1]}`;
+
+      el.fecha_reporte = `${el.fecha_reporte
+        .split(" ")[0]
+        .split("-")
+        .reverse()
+        .join("-")} ${el.fecha_reporte.split(" ")[1]}`;
+
+         el.fecha_inicio = `${el.fecha_inicio
+        .split(" ")[0]
+        .split("-")
+        .reverse()
+        .join("-")} ${el.fecha_inicio.split(" ")[1]}`;
+
+        console.log(el);
+        
+
+      el.fecha_solucion = `${el.fecha_solucion
+        .split(" ")[0]
+        .split("-")
+        .reverse()
+        .join("-")} ${el.fecha_solucion.split(" ")[1]}`;
       datosFinalizados.push(el);
     }
   }

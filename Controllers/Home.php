@@ -51,10 +51,15 @@ class Home extends Controllers{
         }
     }
 
-    public function getProjectStates($id_proyecto = null) {
+    public function getProjectStates($parametros) {
         if ($_GET) {
+
+            $datos = explode("," , $parametros);
+            $nivel = $datos[0];
+            $unidad = $datos[1];
+            $id_proyecto = $datos[2] == null ? "" : $datos[2];
             
-            $requestUser = $this->model->selectProjectStates($id_proyecto);
+            $requestUser = $this->model->selectProjectStates($nivel, $unidad, $id_proyecto);
     
             echo json_encode($requestUser, JSON_UNESCAPED_UNICODE);
         }
@@ -118,9 +123,13 @@ class Home extends Controllers{
         }
     }
 
-    public function getAvgIncidentsIndicatorGroupByTeam(){ 
+    public function getAvgIncidentsIndicatorGroupByTeam($parametros){ 
         if ($_GET) {
-            $requestUser = $this->model->selectAvgIncidentsIndicatorGroupByTeam();
+            $datos = explode("," , $parametros);
+            $nivel = $datos[0];
+            $unidad = $datos[1];
+
+            $requestUser = $this->model->selectAvgIncidentsIndicatorGroupByTeam($nivel,$unidad);
 
             echo json_encode($requestUser, JSON_UNESCAPED_UNICODE);
         }
@@ -134,17 +143,26 @@ class Home extends Controllers{
         }
     }
 
-    public function getTasksPerMonthIndicator() {
+    public function getTasksPerMonthIndicator($parametros) {
         if ($_GET) {
-            $requestUser = $this->model->selectTasksPerMonthIndicator();
+            $datos = explode("," , $parametros);
+            $nivel = $datos[0];
+            $unidad = $datos[1];
+
+            $requestUser = $this->model->selectTasksPerMonthIndicator($nivel,$unidad);
 
             echo json_encode($requestUser, JSON_UNESCAPED_UNICODE);
         }
     }
 
-    public function getAllTasksIndicator() {
+    public function getAllTasksIndicator($parametros) {
         if ($_GET) {
-            $requestUser = $this->model->selectAllTasksIndicator();
+        
+        $datos = explode("," , $parametros);
+        $nivel = $datos[0];
+        $unidad = $datos[1];
+
+            $requestUser = $this->model->selectAllTasksIndicator($nivel,$unidad);
 
             echo json_encode($requestUser, JSON_UNESCAPED_UNICODE);
         }
@@ -182,9 +200,13 @@ class Home extends Controllers{
         }
     }
 
-    public function getTeamsPerIncidents() {
+    public function getTeamsPerIncidents($parametros) {
         if ($_GET) {
-            $requestUser = $this->model->selectTeamsPerIncidents();
+            $datos = explode("," , $parametros);
+            $nivel = $datos[0];
+            $unidad = $datos[1];
+            
+            $requestUser = $this->model->selectTeamsPerIncidents($nivel,$unidad);
 
             echo json_encode($requestUser, JSON_UNESCAPED_UNICODE);
         }
@@ -302,9 +324,15 @@ class Home extends Controllers{
         }
     }
 
-    public function getMonthIncident($mes){
+    public function getMonthIncident($parametros){
         if ($_GET) {
-            $requestUser = $this->model->selectMonthIncident($mes);
+
+            $datos = explode("," , $parametros);
+            $mes = $datos[0];
+            $nivel = $datos[1];
+            $unidad = $datos[2];
+
+            $requestUser = $this->model->selectMonthIncident($mes, $nivel, $unidad);
 
             echo json_encode($requestUser, JSON_UNESCAPED_UNICODE);
         }

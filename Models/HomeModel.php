@@ -15,73 +15,89 @@ class HomeModel extends Mysql
 		return $request;
 	}
 
-	public function selectProjectIndicator($nivel, $unidad = null)
-	{
-		if ($nivel == 0) {
-			return false; // Nivel 0: Retorna false (no tiene permisos)
-		}
-		elseif ($nivel == 1) {
-			// Nivel 1: Filtra por unidad
-			$sql = "SELECT p.id_proyecto, a.estado, COUNT(p.id_proyecto) AS cantidad 
-					FROM proyecto p 
-					INNER JOIN asignacion a ON a.id_asignacion = p.id_asignacion 
-					INNER JOIN equipo_usuario eu ON eu.id_equipo = a.id_equipo
-					INNER JOIN usuario u ON u.id_usuario = eu.id_usuario
-					WHERE a.status = 1 
-					AND u.id_unidad = $unidad
-					GROUP BY a.estado, p.id_proyecto";
-		}
-		elseif ($nivel == 2) {
-			// Nivel 2: Consulta sin filtrar por unidad (acceso total)
-			$sql = "SELECT p.id_proyecto, a.estado, COUNT(p.id_proyecto) AS cantidad 
-					FROM proyecto p 
-					INNER JOIN asignacion a ON a.id_asignacion = p.id_asignacion 
-					WHERE a.status = 1 
-					GROUP BY a.estado, p.id_proyecto";
-		}
-		else {
-			$sql = "SELECT p.id_proyecto, a.estado, COUNT(p.id_proyecto) AS cantidad 
-			FROM proyecto p 
-			INNER JOIN asignacion a ON a.id_asignacion = p.id_asignacion 
-			WHERE a.status = 1 
-			GROUP BY a.estado, p.id_proyecto";
-		}
-	
-		$request = $this->select_all($sql);
-		return $request;
-	}
+public function selectProjectIndicator($nivel, $unidad = null)
+{
+    if ($nivel == 0) {
+        return false; // Nivel 0: Retorna false (no tiene permisos)
+    }
+    elseif ($nivel == 1) {
+        // Nivel 1: Filtra por unidad
+        $sql = "SELECT p.id_proyecto, a.estado, COUNT(p.id_proyecto) AS cantidad 
+                FROM proyecto p 
+                INNER JOIN asignacion a ON a.id_asignacion = p.id_asignacion 
+                INNER JOIN equipo_usuario eu ON eu.id_equipo = a.id_equipo
+                INNER JOIN usuario u ON u.id_usuario = eu.id_usuario
+                WHERE a.status = 1 
+                AND u.id_unidad = $unidad
+                GROUP BY a.estado, p.id_proyecto";
+    }
+    elseif ($nivel == 2) {
+        // Nivel 2: Consulta sin filtrar por unidad (acceso total)
+        $sql = "SELECT p.id_proyecto, a.estado, COUNT(p.id_proyecto) AS cantidad 
+                FROM proyecto p 
+                INNER JOIN asignacion a ON a.id_asignacion = p.id_asignacion 
+                WHERE a.status = 1 
+                GROUP BY a.estado, p.id_proyecto";
+    }
+    else {
+        return false; // Si el nivel no es 0, 1 o 2, retorna false
+    }
 
-	public function selectProjectStates($id_proyecto = null)
-	{
-		$sql = "SELECT p.id_proyecto, p.nombre, 
-				p.descripcion, p.fecha_inicio, 
-				p.fecha_fin, a.estado, e.nombre_equipo 
-				FROM proyecto p 
-				INNER JOIN asignacion a ON a.id_asignacion = p.id_asignacion 
-				INNER JOIN equipo e ON e.id_equipo = a.id_equipo 
-				WHERE a.status = 1;";
+    $request = $this->select_all($sql);
+    return $request;
+}
 
-		if ($id_proyecto) {
-			$sql .= " AND p.id_proyecto = '$id_proyecto'"; // Incluyendo el nombre directamente
-		}
+public function selectProjectStates($nivel, $unidad = null, $id_proyecto = null)
+{
+    // Si el nivel es 0, no tiene permisos
+    if ($nivel == 0) {
+        return false;
+    }
 
-		$arrData =  $this->select_all($sql); 
-		
-		$sqlUsuario = "SELECT u.* FROM proyecto p
+    // Consulta base para obtener proyectos y su estado
+    $sql = "SELECT p.id_proyecto, p.nombre, p.descripcion, 
+                   p.fecha_inicio, p.fecha_fin, a.estado, e.nombre_equipo 
+            FROM proyecto p 
+            INNER JOIN asignacion a ON a.id_asignacion = p.id_asignacion 
+            INNER JOIN equipo e ON e.id_equipo = a.id_equipo 
+            WHERE a.status = 1";
+
+    // Si es nivel 1 (filtro por unidad), añadimos JOIN con usuario
+    if ($nivel == 1 && $unidad) {
+        $sql .= " AND EXISTS (
+                    SELECT 1 FROM equipo_usuario eu
+                    INNER JOIN usuario u ON eu.id_usuario = u.id_usuario
+                    WHERE eu.id_equipo = e.id_equipo
+                    AND u.id_unidad = $unidad
+                )";
+    }
+
+    // Si se pasa un ID de proyecto, filtramos por él
+    if ($id_proyecto) {
+        $sql .= " AND p.id_proyecto = '$id_proyecto'";
+    }
+
+    $arrData = $this->select_all($sql);
+
+    // Si hay datos y se pidió un proyecto específico, buscamos sus usuarios
+        $sqlUsuarios = "SELECT u.* FROM proyecto p
 				INNER JOIN asignacion_equipo ae ON ae.id_asignacion = p.id_asignacion
 				INNER JOIN equipo_usuario eu ON ae.id_equipo = eu.id_equipo
 				INNER JOIN usuario u ON eu.id_usuario = u.id_usuario
 				WHERE ae.id_equipo = eu.id_equipo  AND p.id_proyecto = '$id_proyecto';";
 
-		$dataUsuario = $this->select_all($sqlUsuario);
-
-		for ($i=0; $i < count($arrData); $i++) { 
-			$arrData[$i]['datosUsuariosEquipo'] = $dataUsuario;
-		}
-
-		return $arrData;
-
+	$usuarios = $this->select_all($sqlUsuarios);
+	for ($i=0; $i < count($usuarios); $i++) { 
+		$arrData[$i]["datosUsuariosEquipo"] = $usuarios;
 	}
+
+	// foreach ($arrData as &$proyecto) {
+	// 	$proyecto['datosUsuariosEquipo'] = $usuarios;
+	// }
+	
+	// header('Content-Type: application/json; charset=utf-8');
+	return $arrData;
+}
 
 		public function selectProjectPerUserStates($id_proyecto = null)
 	{
@@ -158,14 +174,36 @@ class HomeModel extends Mysql
 		return $request;
 	}
 
-	public function selectMonthIncident($mes) {
-		$sql = "SELECT i.*, a.estado, a.fecha_asignacion, e.nombre_equipo, u.nombres FROM incidencias i 
-				INNER JOIN asignacion a ON i.id_asignacion = a.id_asignacion
-				INNER JOIN equipo e ON e.id_equipo = a.id_equipo
-				INNER JOIN usuario u on u.id_usuario = i.reportado_por 
-				WHERE MONTH(fecha_reporte) = $mes AND i.id_asignacion != 0";
+	public function selectMonthIncident($mes, $nivel, $unidad) {
 
-		$request = $this->select_all($sql);
+		if($nivel == 2){
+			$sql = "SELECT i.*, a.estado, a.fecha_asignacion, e.nombre_equipo, u.nombres FROM incidencias i 
+			INNER JOIN asignacion a ON i.id_asignacion = a.id_asignacion
+			INNER JOIN equipo e ON e.id_equipo = a.id_equipo
+			INNER JOIN usuario u on u.id_usuario = i.reportado_por 
+			WHERE MONTH(fecha_reporte) = $mes AND i.id_asignacion != 0";
+
+			$request = $this->select_all($sql);
+
+		}elseif($nivel == 1){
+			$sql = "SELECT i.*, a.estado, a.fecha_asignacion, e.nombre_equipo, u.nombres FROM incidencias i 
+			INNER JOIN asignacion a ON i.id_asignacion = a.id_asignacion
+			INNER JOIN equipo e ON e.id_equipo = a.id_equipo
+			INNER JOIN equipo_usuario eu ON eu.id_equipo = a.id_equipo
+			INNER JOIN usuario u on u.id_usuario = i.reportado_por 
+			WHERE MONTH(fecha_reporte) = $mes AND i.id_asignacion != 0 AND u.id_unidad = $unidad";
+
+			$request = $this->select_all($sql);
+		}else{
+			$sql = "SELECT i.*, a.estado, a.fecha_asignacion, e.nombre_equipo, u.nombres FROM incidencias i 
+			INNER JOIN asignacion a ON i.id_asignacion = a.id_asignacion
+			INNER JOIN equipo e ON e.id_equipo = a.id_equipo
+			INNER JOIN equipo_usuario eu ON eu.id_equipo = a.id_equipo
+			INNER JOIN usuario u on u.id_usuario = i.reportado_por 
+			WHERE MONTH(fecha_reporte) = $mes AND i.id_asignacion != 0 AND u.id_unidad = $unidad";
+			
+			$request = $this->select_all($sql);
+		}
 
 		return $request;
 	}
@@ -212,20 +250,40 @@ class HomeModel extends Mysql
 		return $request;
 	}
 
-	public function selectAvgIncidentsIndicatorGroupByTeam()
+	public function selectAvgIncidentsIndicatorGroupByTeam($nivel,$unidad)
 	{
-		$sql = "SELECT 	
-					e.nombre_equipo,
-					SUM(segundos_diferencia) AS Sumatoria, 
-					COUNT(a.id_asignacion) AS Cantidad,
-					ROUND(SUM(segundos_diferencia) / COUNT(a.id_asignacion) / 3600, 2) AS promedio
-					FROM `equipo_usuario` eu
-                    INNER JOIN equipo e ON e.id_equipo = eu.id_equipo
-					INNER JOIN `asignacion` a ON eu.id_equipo = a.id_equipo
-					INNER JOIN `view_diferencia_seg_incidencias` v ON a.id_asignacion = v.id_asignacion 
-					GROUP BY e.nombre_equipo";
+		if($nivel == 2){
+			$sql = "SELECT 	
+			e.nombre_equipo,
+			SUM(segundos_diferencia) AS Sumatoria, 
+			COUNT(a.id_asignacion) AS Cantidad,
+			ROUND(SUM(segundos_diferencia) / COUNT(a.id_asignacion) / 3600, 2) AS promedio
+			FROM `equipo_usuario` eu
+			INNER JOIN equipo e ON e.id_equipo = eu.id_equipo
+			INNER JOIN `asignacion` a ON eu.id_equipo = a.id_equipo
+			INNER JOIN `view_diferencia_seg_incidencias` v ON a.id_asignacion = v.id_asignacion 
+			GROUP BY e.nombre_equipo";
 
-		$request = $this->select_all($sql);
+			$request = $this->select_all($sql);
+		}elseif($nivel == 1){
+			$sql = "SELECT 	
+			e.nombre_equipo,
+			SUM(segundos_diferencia) AS Sumatoria, 
+			COUNT(a.id_asignacion) AS Cantidad,
+			ROUND(SUM(segundos_diferencia) / COUNT(a.id_asignacion) / 3600, 2) AS promedio
+			FROM `equipo_usuario` eu
+			INNER JOIN equipo e ON e.id_equipo = eu.id_equipo
+			INNER JOIN `asignacion` a ON eu.id_equipo = a.id_equipo
+			INNER JOIN `view_diferencia_seg_incidencias` v ON a.id_asignacion = v.id_asignacion 
+            INNER JOIN usuario u ON u.id_usuario = eu.id_usuario
+            WHERE u.id_unidad = $unidad
+			GROUP BY e.nombre_equipo";
+
+			$request = $this->select_all($sql);
+
+		}else{
+			return false;
+		}
 
 		return $request;
 	}
@@ -266,30 +324,62 @@ class HomeModel extends Mysql
 		return $request;
 	}
 
-	public function selectTasksPerMonthIndicator()
+	public function selectTasksPerMonthIndicator($nivel,$unidad)
 	{
-		$sql = "SELECT 
-					MONTH(fecha_asignacion) AS mes, 
-					SUM(CASE WHEN estado = 'Pendiente' THEN 1 ELSE 0 END) AS pendiente, 
-					SUM(CASE WHEN estado = 'En Proceso' THEN 1 ELSE 0 END) AS en_proceso, 
-					SUM(CASE WHEN estado = 'Finalizado' THEN 1 ELSE 0 END) AS finalizado 
-					FROM asignacion
-					WHERE YEAR(fecha_asignacion) = YEAR(CURDATE()) AND tipo_asignacion = 1 AND status = 1
-					GROUP BY MONTH(fecha_asignacion) 
-					ORDER BY mes
-					";
+		if($nivel == 2){
+			$sql = "SELECT 
+			MONTH(fecha_asignacion) AS mes, 
+			SUM(CASE WHEN estado = 'Pendiente' THEN 1 ELSE 0 END) AS pendiente, 
+			SUM(CASE WHEN estado = 'En Proceso' THEN 1 ELSE 0 END) AS en_proceso, 
+			SUM(CASE WHEN estado = 'Finalizado' THEN 1 ELSE 0 END) AS finalizado 
+			FROM asignacion
+			WHERE YEAR(fecha_asignacion) = YEAR(CURDATE()) AND tipo_asignacion = 1 AND status = 1
+			GROUP BY MONTH(fecha_asignacion) 
+			ORDER BY mes
+			";
 
-		$request = $this->select_all($sql);
+			$request = $this->select_all($sql);
+
+		}else if( $nivel == 1){
+			$sql = "SELECT 
+			MONTH(fecha_asignacion) AS mes, 
+			SUM(CASE WHEN estado = 'Pendiente' THEN 1 ELSE 0 END) AS pendiente, 
+			SUM(CASE WHEN estado = 'En Proceso' THEN 1 ELSE 0 END) AS en_proceso, 
+			SUM(CASE WHEN estado = 'Finalizado' THEN 1 ELSE 0 END) AS finalizado 
+			FROM asignacion a INNER JOIN equipo_usuario eu ON a.id_equipo = eu.id_equipo
+			INNER JOIN usuario u ON u.id_usuario = eu.id_usuario 
+			WHERE YEAR(fecha_asignacion) = YEAR(CURDATE()) AND tipo_asignacion = 1 AND a.status = 1 AND u.id_unidad = $unidad
+			GROUP BY MONTH(fecha_asignacion) 
+			ORDER BY mes
+			";
+
+			$request = $this->select_all($sql);
+		}else{ 
+			return false;
+		}
 
 		return $request;
 	}
 
-	public function selectAllTasksIndicator()
+	public function selectAllTasksIndicator($nivel,$unidad)
 	{
-		$sql = "SELECT id_asignacion, estado, COUNT(id_asignacion) AS cantidad FROM asignacion 
-					WHERE status = 1 AND tipo_asignacion = 1 GROUP BY estado";
+		if($nivel == 2){
+			$sql = "SELECT id_asignacion, estado, COUNT(id_asignacion) AS cantidad FROM asignacion 
+			WHERE status = 1 AND tipo_asignacion = 1 GROUP BY estado";
 
-		$request = $this->select_all($sql);
+			$request = $this->select_all($sql);
+
+		}else if($nivel == 1){
+			$sql = "SELECT id_asignacion, estado, COUNT(id_asignacion) AS cantidad FROM asignacion a
+			INNER JOIN equipo_usuario eu ON eu.id_equipo = a.id_equipo
+			INNER JOIN usuario u ON u.id_usuario = eu.id_usuario
+			WHERE a.status = 1 AND tipo_asignacion = 1 AND u.id_unidad = $unidad GROUP BY estado";
+
+			$request = $this->select_all($sql);
+
+		}else{
+			return false;
+		}
 
 		return $request;
 	}
@@ -338,14 +428,30 @@ ORDER BY porcentaje_asignado DESC
 		return $request;
 	}
 
-	public function selectTeamsPerIncidents()
+	public function selectTeamsPerIncidents($nivel,$unidad)
 	{
-		$sql = "SELECT e.nombre_equipo, v.pendiente, v.en_proceso, v.finalizado
-					FROM view_cantidad_incidencias v 
-					INNER JOIN equipo e ON v.id_equipo = e.id_equipo ORDER BY v.finalizado DESC;
-					";
+		if($nivel == 2){
+			$sql = "SELECT e.nombre_equipo, v.pendiente, v.en_proceso, v.finalizado
+			FROM view_cantidad_incidencias v 
+			INNER JOIN equipo e ON v.id_equipo = e.id_equipo 
+			ORDER BY v.finalizado DESC
+			";
 
-		$request = $this->select_all($sql);
+			$request = $this->select_all($sql);
+		}elseif ($nivel == 1) {
+			$sql = "SELECT DISTINCT e.nombre_equipo, v.pendiente, v.en_proceso, v.finalizado
+					FROM view_cantidad_incidencias v
+					INNER JOIN equipo e ON v.id_equipo = e.id_equipo
+					INNER JOIN equipo_usuario eu ON v.id_equipo = eu.id_equipo
+					INNER JOIN usuario u ON u.id_usuario = eu.id_usuario
+					WHERE u.id_unidad = 1
+					ORDER BY v.finalizado DESC;
+			";
+
+			$request = $this->select_all($sql);
+		}else{
+			return false;
+		}
 
 		return $request;
 	}

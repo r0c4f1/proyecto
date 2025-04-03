@@ -7,6 +7,7 @@ sideBar(); ?>
         <div class="header-title">
         
             <h2>Computadoras</h2>
+            <span>Computadoras OTIC</span>
         </div>
         <div class="user-info">
                         <div class="username">

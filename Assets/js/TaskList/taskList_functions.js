@@ -790,6 +790,22 @@ async function llenarModal(id, tipo) {
       textarea.setAttribute("readonly", true); // Establece el textarea como solo lectura
     }
   } else if (tipo === "proyecto") {
+    let [dia, mes, anio] = data[0].fecha_inicio_formateada.split("-");
+    let fechaComparar = `${dia}/${mes.replace("0", "")}/${anio}`;
+    console.log(fechaComparar === new Date().toLocaleDateString());
+
+    if (fechaComparar != new Date().toLocaleDateString()) {
+      Swal.fire({
+        icon: "info",
+        title: "Tareas Asignadas",
+        text: `Proyecto destinado para iniciar el dia: ${fechaComparar}`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
+
+      return;
+    }
+
     titleModal.textContent = "Proyecto";
     categoryModal.textContent = data[0].nombre;
     descriptionModal.textContent = data[0].descripcion;
@@ -798,6 +814,26 @@ async function llenarModal(id, tipo) {
 
     textModal.innerHTML =
       "<strong>Fecha de inicio:</strong> " + data[0].fecha_inicio_formateada;
+    // console.log(data);
+    if (data[0].estado === "En Proceso") {
+      titleModal.textContent = "Proyecto";
+      categoryModal.textContent = data[0].nombre;
+      descriptionModal.textContent = data[0].descripcion;
+      textarea.style.display = "block"; // Oculta el textarea
+      label.style.display = "block"; // Oculta el label del textarea
+
+      textModal.innerHTML =
+        "<strong>Fecha de inicio:</strong> " + data[0].fecha_inicio_formateada;
+    } else if (data[0].estado === "Finalizado") {
+      titleModal.textContent = "Proyecto";
+      categoryModal.textContent = data[0].nombre;
+      descriptionModal.textContent = data[0].descripcion;
+      textarea.textContent = data[0].descripcion_solucion;
+      textarea.style.display = "block"; // Oculta el textarea
+      label.style.display = "block"; // Oculta el label del textarea
+
+      textarea.setAttribute("readonly", true); // Establece el textarea como solo lectura
+    }
 
     if (
       !data[0].fecha_fin ||
@@ -970,26 +1006,24 @@ formTask.addEventListener("submit", async (e) => {
     } else if (value === "En Proceso") {
       // VALIDACION ===========================================
       let textArea = formTask.querySelectorAll("textarea");
-      if (tipoEstadoTaskLst === "incidente") {
-        if (textArea.item(0).value === "") {
-          alertTimeOut("error", "Campo descripción solucion vacío", 3000);
-          return;
-        }
+      if (textArea.item(0).value === "") {
+        alertTimeOut("error", "Campo descripción solucion vacío", 3000);
+        return;
+      }
 
-        if (
-          !validator.isLength(textArea.item(0).value, { min: 8, max: 200 }) ||
-          !validator.matches(
-            textArea.item(0).value,
-            /^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9@.,\-\_\s]+$/
-          )
-        ) {
-          alertTimeOut(
-            "error",
-            "Descripción solucion inválida, entre 8 y 200 caracteres",
-            3000
-          );
-          return;
-        }
+      if (
+        !validator.isLength(textArea.item(0).value, { min: 8, max: 200 }) ||
+        !validator.matches(
+          textArea.item(0).value,
+          /^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9@.,\-\_\s]+$/
+        )
+      ) {
+        alertTimeOut(
+          "error",
+          "Descripción solucion inválida, entre 8 y 200 caracteres",
+          3000
+        );
+        return;
       }
 
       // ======================================================

@@ -302,7 +302,7 @@ formAddGoals.addEventListener("submit", async (e) => {
   // ==========================================================
 
   formData.append("fecha_limite", `${fecha_limite.value} 23:59:59`);
-  let query = await fetch(`${base_url}/Poa/newDinamicGoals`, {
+let query = await fetch(`${base_url}/Poa/newDinamicGoals`, {
     method: "POST",
     body: formData,
   });

@@ -178,6 +178,29 @@ function closeModalEditUserModal() {
 async function addUser(e) {
   e.preventDefault();
 
+    const formDataVerifyId = new FormData();
+
+  formDataVerifyId.append("id_usuario", document.getElementById("cedulaId").value);
+
+  let queryVerifyId = await fetch(`${base_url}/Users/verifyId`, {
+    method: "POST",
+    body: formDataVerifyId,
+  });
+
+  let dataUsuarioSistema = await queryVerifyId.json();
+
+  if (!dataUsuarioSistema.status) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: dataUsuarioSistema.msg,
+      showConfirmButton: false,
+      timer: 1500,
+    })
+
+    return;
+  }
+
   let formAddUsers = document.getElementById("formAddUsers");
   let inputs = formAddUsers.querySelectorAll("input");
   let formatoTelefono = ["0424", "0414", "0426", "0416", "0412"];
@@ -317,7 +340,7 @@ async function addUser(e) {
   // =====================================
 
   const formData = new FormData(formAddUsers);
-  formData.append("nivel", checked ? 2 : 0);
+  formData.append("nivel", checked ? 1 : 0);
 
   let query = await fetch(base_url + "/Users/registerUser", {
     method: "POST",
@@ -712,38 +735,11 @@ async function verifyId(e) {
     return;
   }
 
-  let data = await fetch(`${base_url}/Api/getApi`);
-  let query = await data.json();
-
-  for (let i = 0; i < query[0].data.length; i++) {
-    const el = query[0].data[i];
-
-    if (el.pin === id) {
-      let formAddUsers = document.getElementById("formAddUsers");
-      let inputs = formAddUsers.querySelectorAll("input");
-      let selects = formAddUsers.querySelectorAll("select");
-
-      inputs.item(2).value = el.firstnames;
-      inputs.item(3).value = el.lastnames;
-      selects.item(1).value = el.sex;
-
-      break;
-    }
-  }
-
-  if (inputs.item(2).value === "") {
-    let formAddUsers = document.getElementById("formAddUsers");
+   let formAddUsers = document.getElementById("formAddUsers");
     let inputs = formAddUsers.querySelectorAll("input");
     let selects = formAddUsers.querySelectorAll("select");
 
-    inputs.item(2).value = "";
-    inputs.item(3).value = "";
-
-    alertTimeOut("error", "Usuario no encontrado", 2000);
-    return;
-  }
-
-  // console.log("hola");
+    
 
   // try {
   //   const params = {
@@ -754,43 +750,68 @@ async function verifyId(e) {
   //   const resp = await consulta("/directory/search_person.json", params, "GET");
 
   //   if (resp[0].data.length === 0) {
-  //     alertTimeOut("error", "Cédula no encontrada", 3000);
+  //     alertTimeOut("error", "Cédula no encontrada en el sistema", 3000);
+  //     document.getElementById("btnAddUserSubmit").disabled = true;
   //     return;
-  //   }
-
-  //   let formAddUsers = document.getElementById("formAddUsers");
-  //   let inputs = formAddUsers.querySelectorAll("input");
-  //   let selects = formAddUsers.querySelectorAll("select");
+  //   }else {
+  //      document.getElementById("btnAddUserSubmit").disabled = false;
+  //  }
 
   //   inputs.item(2).value = resp[0].data[0].firstnames;
   //   inputs.item(3).value = resp[0].data[0].lastnames;
   //   selects.item(1).value = resp[0].data[0].sex;
+  //   inputs.item(6).value = data[0].data[0].type_str;
 
-  //   console.log(resp);
   // } catch (e) {
   //   alertTimeOut("error", "Sin acceso al servidor", 3000);
+  // document.getElementById("btnAddUserSubmit").disabled = true;
   //   console.log(inputs);
 
   //   return;
   // }
 
-  // const formData = new FormData();
 
-  // formData.append("id_usuario", id.value);
+  let query = await fetch(`${base_url}/Api/getApi`);
+  let data = await query.json();
 
-  // let query = await fetch(${base_url}/Users/verifyId, {
-  //   method: "POST",
-  //   body: formData,
-  // });
+  if(data[0].data.length === 0) {
+    alertTimeOut("error", "Cedula no encontrada", 2000);
+    document.getElementById("btnAddUserSubmit").disabled = true;
+    return;
+  }else {
+    document.getElementById("btnAddUserSubmit").disabled = false;
+  }
 
-  // let { status, msg } = await query.json();
+  let encontrado = 0;
 
-  // if (!status) {
-  //   Swal.fire({
-  //     icon: "error",
-  //     title: "Error",
-  //     text: msg,
-  //     showConfirmButton: false,
-  //     timer: 1500,
-  //    }); }
+  for (let i = 0; i < data[0].data.length; i++) {
+    const el = data[0].data[i];
+
+    if(el.pin === id) {
+       inputs.item(2).value = data[0].data[i].firstnames;
+       inputs.item(3).value = data[0].data[i].lastnames;
+       inputs.item(6).value = data[0].data[i].type_str;
+       selects.item(1).value = data[0].data[i].sex;
+       encontrado = 1;
+
+       break;
+    }
+    
+  }
+
+  if(encontrado === 0) {
+     inputs.item(2).value = "";
+    inputs.item(3).value = "";
+    inputs.item(6).value = "";
+    selects.item(1).value = 0;
+    alertTimeOut("error", "Usuario no encontrado en el sistema", 2000);
+    document.getElementById("btnAddUserSubmit").disabled = true;
+  }
+ 
+
+
+  console.log(data);
+  
+
+ 
 }

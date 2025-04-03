@@ -110,7 +110,7 @@ class Poa extends Controllers{
 
 
         $requestUser = $this->model->selectDataIncidentGoals($id, $fecha_creacion, $fecha_limite);
-    
+
         echo json_encode($requestUser, JSON_UNESCAPED_UNICODE);
     }
 

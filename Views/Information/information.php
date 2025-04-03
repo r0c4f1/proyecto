@@ -1,13 +1,13 @@
 <?php headerAdmin($data);
 sideBar();
-
+$nivelUsuario = $_SESSION['nivel'];
 ?>
 <div class="main">
     <div class="header-wrap">
         <div class="header-title">
 
             <h2>Informes</h2>
-
+<span>Reportes OTIC</span>
 
 
         </div>
@@ -35,7 +35,7 @@ sideBar();
                             <label for="tipo" class="form-label fw-bold">Seleccionar Reporte</label>
                             <select class="form-select" id="tipo" name="tipo">
                                 <option value="">---</option>
-                                <option value="historico">Histórico de Operaciones</option>
+                                <option value="historico" style="<?php echo $nivelUsuario == 0 ? 'display:none;' : ''; ?>">Histórico de Operaciones</option>
                                 <option value="incidencia">Incidencia</option>
                                 <option value="metas">Metas</option>
                                 <option value="proyecto">Proyecto</option>

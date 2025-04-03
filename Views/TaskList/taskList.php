@@ -14,7 +14,7 @@ sideBar();
     <div class="header-wrap">
         <div class="header-title">
             <h2>Tareas Asignadas</h2>
-
+<span>Incidencias y Proyectos Asignados</span>
         </div>
         <div class="user-info">
 

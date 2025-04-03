@@ -31,7 +31,7 @@
             <li>
                 <a href="<?= base_url() ?>/Poa/poa">
                     <i class="fa-solid fa-chart-column" style="color: #000; font-size: 20px; margin-left:5px;"></i>
-                    <span>POA</span>
+                    <span>Metas</span>
                 </a>
             <li>
                 <a href="<?= base_url() ?>/Project/project">

@@ -129,18 +129,20 @@ WHERE md.estado IN (0, 2)
 
 		$fechaLimiteHora = explode("---", $fecha_limite);
 		$fechaHora = explode("---", $fecha_creacion);
+		
 
 		if ($id = 1) {
 			$sql = "SELECT COUNT(i.id_incidencia) AS cantidad
 						FROM incidencias i
 						INNER JOIN tipo_incidencia ti ON i.id_tipo = ti.id_tipo
-					WHERE ti.id_metas = $id AND i.fecha_solucion BETWEEN '$fechaHora[0] 00:00:00' AND '$fechaLimiteHora[0] $fechaLimiteHora[1]'";
+					WHERE ti.id_metas = $id AND i.fecha_solucion BETWEEN '$fechaHora[0] 00:00:00' AND '$fechaLimiteHora[0] 23:29:29'";
 		} else {
 			$sql = "SELECT COUNT(i.id_incidencia) AS cantidad
 						FROM incidencias i
 						INNER JOIN tipo_incidencia ti ON i.id_tipo = ti.id_tipo
 					WHERE i.fecha_solucion BETWEEN '$fechaHora[0] 00:00:00' AND '$fechaLimiteHora[0] $fechaLimiteHora[1]'";
-		}
+
+}
 
 		$request = $this->select($sql);
 

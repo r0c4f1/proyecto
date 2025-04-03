@@ -47,10 +47,11 @@
                     </div>
 
                     <div class="row p-3">
-                    <label class="col">
+                        <label class="col">
                             Unidad
                             <select name="id_unidad" id="selectEditUnit" class="w-100 form-select" required>
-                            <option value="">---</option></select>
+                                <option value="">---</option>
+                            </select>
                         </label>
 
                         <label class="col">
@@ -100,12 +101,13 @@
                         <div class="col-6">
                             <label>
                                 Cédula
-                                <input type="number" name="cedula" onfocusout="verifyId(event)" placeholder="Cédula">
+                                <input type="number" name="cedula" onfocusout="verifyId(event)" placeholder="Cédula"
+                                    id="cedulaId">
                             </label>
                         </div>
                         <div class="col-6 d-flex justify-content-end">
                             <div class="form-check form-switch rounded"><label class="form-check-label"
-                                    for="isAdmin">Admin
+                                    for="isAdmin">Jefe
                                     <input class="form-check-input rounded " type="checkbox" role="switch"
                                         id="isAdmin"></label>
                             </div>
@@ -151,7 +153,8 @@
                         <label class="col">
                             Unidad
                             <select name="id_unidad" id="selectUnit" class="w-100 form-select" required>
-                            <option value="">---</option></select>
+                                <option value="">---</option>
+                            </select>
                         </label>
 
                         <label class="col">
@@ -162,7 +165,7 @@
                             </select>
                         </label>
 
-                        
+
                         <label class="col">
                             Discapacidad
                             <select name="discapacidad" id="discapacidad" class="w-100 form-select">
@@ -182,7 +185,8 @@
                                 <button type="button" id="visible" class="toggle-password" onclick="changeType()">
                                     <i class="fa-solid fa-eye-slash"></i>
                                 </button>
-                                <button type="button" id="invisible" class="toggle-password visually-hidden" onclick="changeType()">
+                                <button type="button" id="invisible" class="toggle-password visually-hidden"
+                                    onclick="changeType()">
                                     <i class="fa-solid fa-eye"></i>
                                 </button>
                             </label>
@@ -191,9 +195,10 @@
 
                         <label class="col-md-6 input-container">
                             Repetir Clave
-                            <input type="password" onkeyup="claveRepetida(event)" id="claveRepetida" placeholder="Ex@mpl3">
-                            <button type="button" id="visible2" class="toggle-password"
-                                onclick="changeType()"><i class="fa-solid fa-eye-slash"></i></button>
+                            <input type="password" onkeyup="claveRepetida(event)" id="claveRepetida"
+                                placeholder="Ex@mpl3">
+                            <button type="button" id="visible2" class="toggle-password" onclick="changeType()"><i
+                                    class="fa-solid fa-eye-slash"></i></button>
                             <button type="button toggle-password" id="invisible2"
                                 class="toggle-password visually-hidden" onclick="changeType()"><i
                                     class="fa-solid fa-eye"></i></button>

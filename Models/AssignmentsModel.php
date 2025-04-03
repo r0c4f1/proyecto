@@ -45,7 +45,10 @@ use Mpdf\PsrHttpMessageShim\Request;
 				$sql = "SELECT 
 						ti.id_tipo, ti.categoria, ti.nombre_tipo, i.*, 
 						a.fecha_asignacion, a.estado, a.status, 
-						e.nombre_equipo, u.nombres, u.apellidos
+						e.nombre_equipo, u.nombres, u.apellidos,
+						DATE_FORMAT(i.fecha_reporte, '%d-%m-%Y %H:%i:%s') AS fecha_reporte_formateada, 
+						DATE_FORMAT(i.fecha_solucion, '%d-%m-%Y %H:%i:%s') AS fecha_solucion_formateada, 
+						DATE_FORMAT(a.fecha_asignacion, '%d-%m-%Y') AS fecha_asignacion_formateada
 					FROM 
 						tipo_incidencia ti
 					INNER JOIN 
