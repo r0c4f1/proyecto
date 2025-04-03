@@ -1,91 +1,59 @@
-function modalView() {
-  const myModal = new bootstrap.Modal("#modalView");
-  myModal.show();
-}
+// secciones para insertar las cards con datos
+const listaCardIncidenciasPendientes = document.getElementById(
+  "dataIncidenciasPendientes"
+);
+const listaCardProyectosPendientes = document.getElementById(
+  "dataProyectosPendientes"
+);
+const listaCardIncidenciasEnProceso = document.getElementById(
+  "dataIncidenciasEnProceso"
+);
+const listaCardProyectosEnProceso = document.getElementById(
+  "dataProyectosEnProceso"
+);
+const listaCardIncidenciasFinalizadas = document.getElementById(
+  "dataIncidenciasFinalizados"
+);
+const listaCardProyectosFinalizadas = document.getElementById(
+  "dataProyectosFinalizados"
+);
 
-let datosFiltro = [];
-let listaCard = document.getElementById("listaCard");
-let listaCard2 = document.getElementById("listaCard2");
-const titleCard = document.getElementById("titleCard");
-const titleCard2 = document.getElementById("titleCard2");
-let idCapturado = ""; //Captura el id incidencia de la card para ser usado
-let tipoCapturado = "";
+// número que indica cuantos registros estan en proyecto e incidencias (combinados) ejm : proyectosPendientes 2 + incidenciasPendientes 3: countPendientes 5
+const countPendiente = document.getElementById("countPendiente");
+const countEnProceso = document.getElementById("countEnProceso");
+const countFinalizado = document.getElementById("countFinalizado");
+
 let textarea = document.getElementById("descripcion_solucion"); // esto es el input oculto
 let label = document.getElementById("label_solucion"); // label del input oculto
+const formTask = document.getElementById("formTask");
 
-// ============== VARIALBLES HISTORICO =================
-let tipoOperacion = "";
-let descripcionOperacion = "";
-let estadoOperacion = 0;
-
-// =====================================================
-
-function alertTimeOut(icon, text, timer) {
-  Swal.fire({
-    toast: true,
-    position: "top-end",
-    icon,
-    text,
-    showConfirmButton: false,
-    timer,
-  });
-}
-
-function reload() {
-  window.location.reload();
-}
-
-//FUNCIÓN PARA EL BOTON DE LAS TAREAS PENDIENTES
-async function cardPendiente() {
-  let idUsuario = document.getElementById("idUsuario").textContent;
-
-  // Obtener equipos del usuario
-  let query2 = await fetch(`${base_url}/TaskList/getEquipo/${idUsuario}`);
-  let equipos = await query2.json();
-
-  // Verificar si el usuario pertenece a algún equipo
-  if (equipos.length === 0) {
-    listaCard.innerHTML = `
-      <header class="container-fluid mt-2">
-        <div class="border rounded bg-danger p-1 text-white text-center">
-          <h3>Sin equipo asignado</h3>
-        </div>
-      </header>
-      <div class="text-center mt-4">No perteneces a ningún equipo.</div>`;
-    listaCard2.innerHTML = ""; // Limpiar el contenido de listaCard2 también
-    return;
-  }
-
-  // Arrays para almacenar datos de incidentes y proyectos
+async function getPendientes() {
+  let queryEquipos = await fetch(`${base_url}/TaskList/getEquipo/${userId}`);
+  let equipos = await queryEquipos.json();
   let dataIncidentes = [];
   let dataProyectos = [];
+  let count = 0;
 
-  // Iterar sobre cada equipo y obtener datos de incidentes y proyectos pendientes
-  for (let equipo of equipos) {
-    // Obtener incidentes pendientes
+  for (let i = 0; i < equipos.length; i++) {
+    const equipo = equipos[i];
     let queryIncidentes = await fetch(
       `${base_url}/TaskList/getIncident/${equipo.id_equipo}`
     );
     let incidentes = await queryIncidentes.json();
+
+    if (incidentes.length > 0) count = incidentes.length;
+
     dataIncidentes.push(...incidentes);
 
-    // Obtener proyectos pendientes
     let queryProyectos = await fetch(
       `${base_url}/TaskList/getProject/${equipo.id_equipo}`
     );
     let proyectos = await queryProyectos.json();
+
+    if (proyectos.length > 0) count += proyectos.length;
+
     dataProyectos.push(...proyectos);
   }
-
-  datosFiltro.push(...dataIncidentes, ...dataProyectos);
-
-  // Construir la sección de incidentes pendientes
-  let titulo = `
-    <header class="container-fluid mt-2">
-      <div class="border rounded bg-danger p-1 text-white text-center">
-        <h3>Incidencias Pendientes</h3>
-      </div>
-    </header>`;
 
   let tab2 = `<ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">`;
   let divs2 = `<div class="tab-content" id="myTabContent">`;
@@ -94,33 +62,32 @@ async function cardPendiente() {
 
   // Agrupar proyectos en chunks de 3
 
-  const chunkSize2 = 7;
-  const grupos2 = [];
-  for (let i = 0; i < dataIncidentes.length; i += chunkSize2) {
-    grupos2.push(dataIncidentes.slice(i, i + chunkSize2));
+  const chunkSizeIncidencias = 7;
+  const gruposIncidencias = [];
+  for (let i = 0; i < dataIncidentes.length; i += chunkSizeIncidencias) {
+    gruposIncidencias.push(dataIncidentes.slice(i, i + chunkSizeIncidencias));
   }
 
   let secitonsIncidents = "";
   if (dataIncidentes.length > 0) {
-    grupos2.forEach((grupo, index) => {
+    gruposIncidencias.forEach((grupo, index) => {
       // Construir las secciones del grupo actual
-      let sections = "";
       grupo.forEach((incidencia) => {
         secitonsIncidents += `
-                <section class="card-content m-3" style="max-width:300px;">
-                    <div class="container-card-body border rounded d-flex shadow align-items-center p-3 hover-bg" 
-                         onclick="llenarModal(${incidencia.id_incidencia}, 'incidente')">
-                        <div class="card-body-icon d-flex justify-content-center align-items-center">
-                            <i class="fas fa-check text-success" style="font-size: 28px;"></i>
-                        </div>
-                        <div class="card-body-text p-2">
-                            <div class="card-title fw-bold"><h6>${incidencia.categoria}</h6></div>
-                            <p class="card-text">${incidencia.nombre_tipo}</p>
-                            <p class="card-text">${incidencia.fecha_reporte_formateada}</p>
-                        </div>
-                    </div>
-                             <input type="hidden" id="tipoEntidad" name="tipoEntidad" value="incidente">
-                </section>`;
+                  <section class="card-content m-3" style="max-width:300px;">
+                      <div class="container-card-body border rounded d-flex shadow align-items-center p-3 hover-bg"
+                           onclick="llenarModal(${incidencia.id_incidencia}, 'incidente')">
+                          <div class="card-body-icon d-flex justify-content-center align-items-center">
+                              <i class="fas fa-check text-success" style="font-size: 28px;"></i>
+                          </div>
+                          <div class="card-body-text p-2">
+                              <div class="card-title fw-bold"><h6>${incidencia.categoria}</h6></div>
+                              <p class="card-text">${incidencia.nombre_tipo}</p>
+                              <p class="card-text">${incidencia.fecha_reporte_formateada}</p>
+                          </div>
+                      </div>
+                               <input type="hidden" id="tipoEntidad" name="tipoEntidad" value="incidente">
+                  </section>`;
       });
 
       // Construir tabs y paneles
@@ -129,79 +96,71 @@ async function cardPendiente() {
 
       // Añadir botón del tab
       tab2 += `
-            <li class="nav-item" role="presentation">
-                <button class="nav-link ${isActive}" 
-                        id="${tabId}-btn" 
-                        data-bs-toggle="tab" 
-                        data-bs-target="#${tabId}" 
-                        type="button" 
-                        role="tab" 
-                        aria-controls="${tabId}" 
-                        aria-selected="${index === 0 ? "true" : "false"}">
-                    ${indice2}
-                </button>
-            </li>`;
+              <li class="nav-item" role="presentation">
+                  <button class="nav-link ${isActive}"
+                          id="${tabId}-btn"
+                          data-bs-toggle="tab"
+                          data-bs-target="#${tabId}"
+                          type="button"
+                          role="tab"
+                          aria-controls="${tabId}"
+                          aria-selected="${index === 0 ? "true" : "false"}">
+                      ${indice2}
+                  </button>
+              </li>`;
 
       // Añadir contenido del tab
       divs2 += `
-            <div class="tab-pane fade ${index === 0 ? "show active" : ""} " 
-                 id="${tabId}" 
-                 role="tabpanel" 
-                 aria-labelledby="${tabId}-btn" 
-                 tabindex="0">
-                 <div class='d-flex flex-wrap'>
-                 ${secitonsIncidents}
-                 </div>
-            </div>`;
+              <div class="tab-pane fade ${index === 0 ? "show active" : ""} "
+                   id="${tabId}"
+                   role="tabpanel"
+                   aria-labelledby="${tabId}-btn"
+                   tabindex="0">
+                   <div class='d-flex flex-wrap'>
+                   ${secitonsIncidents}
+                   </div>
+              </div>`;
 
       currentTabIndex2++;
       indice2++;
     });
   } else {
-    secitonsIncidents += `<div class="text-center mt-4">No hay incidencias finalizadas</div>`;
+    secitonsIncidents += `<h5 class="text-center mt-4">No hay incidencias finalizadas</h5>`;
     divs2 = secitonsIncidents;
   }
-
-  // Construir la sección de proyectos pendientes
-  let tituloProyecto = `
-    <header class="container-fluid mt-2">
-      <div class="border rounded bg-danger p-1 text-white text-center">
-        <h3>Proyectos Pendientes</h3>
-      </div>
-    </header>`;
 
   let cardProyectos = "";
   let tab = `<ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">`;
   let divs = `<div class="tab-content" id="myTabContent">`;
   let indice = 1;
-  let currentTabIndex = 0; // Índice único para tabs
+  let currentTabIndex = 0;
 
-  const chunkSize = 7;
-  const grupos = [];
-  for (let i = 0; i < dataProyectos.length; i += chunkSize) {
-    grupos.push(dataProyectos.slice(i, i + chunkSize));
+  const chunkSizeProyectos = 7;
+  const gruposProyectos = [];
+  for (let i = 0; i < dataProyectos.length; i += chunkSizeProyectos) {
+    gruposProyectos.push(dataProyectos.slice(i, i + chunkSizeProyectos));
   }
 
   let sections = "";
 
   if (dataProyectos.length > 0) {
-    grupos.forEach((grupo, index) => {
+    gruposProyectos.forEach((grupo, index) => {
       // Construir las secciones del grupo actual
       grupo.forEach((proyecto) => {
         sections += `
-                <section class="card-content m-3" style="max-width:300px;">
-                    <div class="container-card-body border rounded d-flex shadow align-items-center p-3 hover-bg" 
-                         onclick="llenarModal(${proyecto.id_proyecto}, 'proyecto')">
-                        <div class="card-body-icon d-flex justify-content-center align-items-center">
-                            <i class="fas fa-check text-success" style="font-size: 28px;"></i>
-                        </div>
-                        <div class="card-body-text p-2">
-                            <div class="card-title fw-bold"><p>${proyecto.nombre}</p></div>
-                            <p class="card-text">${proyecto.fecha_inicio_formateada}</p>
-                        </div>
-                    </div>
-                     <input type="hidden" id="tipoEntidad" name="tipoEntidad" value="proyecto">
-                </section>`;
+                  <section class="card-content m-3" style="max-width:300px;">
+                      <div class="container-card-body border rounded d-flex shadow align-items-center p-3 hover-bg"
+                           onclick="llenarModal(${proyecto.id_proyecto}, 'proyecto')">
+                          <div class="card-body-icon d-flex justify-content-center align-items-center">
+                              <i class="fas fa-check text-success" style="font-size: 28px;"></i>
+                          </div>
+                          <div class="card-body-text p-2">
+                              <div class="card-title fw-bold"><p>${proyecto.nombre}</p></div>
+                              <p class="card-text">${proyecto.fecha_inicio_formateada}</p>
+                          </div>
+                      </div>
+                       <input type="hidden" id="tipoEntidad" name="tipoEntidad" value="proyecto">
+                  </section>`;
       });
 
       // Construir tabs y paneles
@@ -210,36 +169,36 @@ async function cardPendiente() {
 
       // Añadir botón del tab
       tab += `
-            <li class="nav-item" role="presentation">
-                <button class="nav-link ${isActive}" 
-                        id="${tabId}-btn" 
-                        data-bs-toggle="tab" 
-                        data-bs-target="#${tabId}" 
-                        type="button" 
-                        role="tab" 
-                        aria-controls="${tabId}" 
-                        aria-selected="${index === 0 ? "true" : "false"}">
-                    ${indice}
-                </button>
-            </li>`;
+              <li class="nav-item" role="presentation">
+                  <button class="nav-link ${isActive}"
+                          id="${tabId}-btn"
+                          data-bs-toggle="tab"
+                          data-bs-target="#${tabId}"
+                          type="button"
+                          role="tab"
+                          aria-controls="${tabId}"
+                          aria-selected="${index === 0 ? "true" : "false"}">
+                      ${indice}
+                  </button>
+              </li>`;
 
       // Añadir contenido del tab
       divs += `
-            <div class="tab-pane fade ${index === 0 ? "show active" : ""} " 
-                 id="${tabId}" 
-                 role="tabpanel" 
-                 aria-labelledby="${tabId}-btn" 
-                 tabindex="0">
-                 <div class='d-flex flex-wrap'>
-                 ${sections}
-                 </div>
-            </div>`;
+              <div class="tab-pane fade ${index === 0 ? "show active" : ""} "
+                   id="${tabId}"
+                   role="tabpanel"
+                   aria-labelledby="${tabId}-btn"
+                   tabindex="0">
+                   <div class='d-flex flex-wrap'>
+                   ${sections}
+                   </div>
+              </div>`;
 
       currentTabIndex++;
       indice++;
     });
   } else {
-    cardProyectos = `<div class="text-center">No hay proyectos pendientes</div>`;
+    cardProyectos = `<h5 class="text-center mt-3">No hay proyectos pendientes</h5>`;
     divs += `<div class="tab-pane fade show active">${cardProyectos}</div>`;
   }
 
@@ -254,19 +213,16 @@ async function cardPendiente() {
   btnModal.style.display = "block";
   btnClose.style.display = "none";
 
-  titleCard.innerHTML = titulo;
-  titleCard2.innerHTML = tituloProyecto;
-  listaCard.innerHTML = `<div class='d-flex flex-column w-100'>${tab2}${divs2}</div>`;
-  listaCard2.innerHTML = `<div class='d-flex flex-column w-100'>${tab}${divs}</div>`;
+  listaCardIncidenciasPendientes.innerHTML = `<div class='d-flex flex-column w-100'>${tab2}${divs2}</div>`;
+  listaCardProyectosPendientes.innerHTML = `<div class='d-flex flex-column w-100'>${tab}${divs}</div>`;
+  countPendiente.textContent = count;
 }
 
-//FUNCIÓN PARA EL BOTÓN DE LAS TAREAS EN PROCESO
-async function cardEnProceso() {
-  let idUsuario = document.getElementById("idUsuario").textContent;
-
+async function getEnProceso() {
   // Obtener equipos del usuario
-  let query2 = await fetch(`${base_url}/TaskList/getEquipo/${idUsuario}`);
+  let query2 = await fetch(`${base_url}/TaskList/getEquipo/${userId}`);
   let equipos = await query2.json();
+  let count = 0;
 
   // Verificar si el usuario pertenece a algún equipo
   if (equipos.length === 0) {
@@ -292,6 +248,8 @@ async function cardEnProceso() {
       `${base_url}/TaskList/getIncidentInProcess/${equipo.id_equipo}`
     );
     let incidentes = await queryIncidentes.json();
+    if (incidentes.length > 0) count = incidentes.length;
+
     dataIncidentes.push(...incidentes);
 
     // Obtener proyectos en proceso
@@ -299,20 +257,11 @@ async function cardEnProceso() {
       `${base_url}/TaskList/getProjectInProcess/${equipo.id_equipo}`
     );
     let proyectos = await queryProyectos.json();
+    if (proyectos.length > 0) count += proyectos.length;
     dataProyectos.push(...proyectos);
   }
 
-  datosFiltro.push(...dataIncidentes, ...dataProyectos);
-
   // Construir la sección de incidentes en proceso
-  let titulo = `
-    <header class="container-fluid mt-2">
-      <div class="border rounded bg-primary p-1 text-white text-center">
-        <h3>Incidencias En Proceso</h3>
-      </div>
-    </header>`;
-
-  let cardIncidentes = "";
   let tab2 = `<ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">`;
   let divs2 = `<div class="tab-content" id="myTabContent">`;
   let indice2 = 1;
@@ -357,13 +306,13 @@ async function cardEnProceso() {
       // Añadir botón del tab
       tab2 += `
             <li class="nav-item" role="presentation">
-                <button class="nav-link ${isActive}" 
-                        id="${tabId}-btn" 
-                        data-bs-toggle="tab" 
-                        data-bs-target="#${tabId}" 
-                        type="button" 
-                        role="tab" 
-                        aria-controls="${tabId}" 
+                <button class="nav-link ${isActive}"
+                        id="${tabId}-btn"
+                        data-bs-toggle="tab"
+                        data-bs-target="#${tabId}"
+                        type="button"
+                        role="tab"
+                        aria-controls="${tabId}"
                         aria-selected="${index === 0 ? "true" : "false"}">
                     ${indice2}
                 </button>
@@ -371,10 +320,10 @@ async function cardEnProceso() {
 
       // Añadir contenido del tab
       divs2 += `
-            <div class="tab-pane fade ${index === 0 ? "show active" : ""} " 
-                 id="${tabId}" 
-                 role="tabpanel" 
-                 aria-labelledby="${tabId}-btn" 
+            <div class="tab-pane fade ${index === 0 ? "show active" : ""} "
+                 id="${tabId}"
+                 role="tabpanel"
+                 aria-labelledby="${tabId}-btn"
                  tabindex="0">
                  <div class='d-flex flex-wrap'>
                  ${secitonsIncidents}
@@ -385,17 +334,9 @@ async function cardEnProceso() {
       indice2++;
     });
   } else {
-    secitonsIncidents += `<div class="text-center mt-4">No hay incidencias finalizadas</div>`;
+    secitonsIncidents += `<h5 class="text-center mt-4">No hay incidencias en proceso</h5>`;
     divs2 = secitonsIncidents;
   }
-
-  // Construir la sección de proyectos finalizados
-  let tituloProyecto = `
-    <header class="container-fluid mt-2">
-      <div class="border rounded bg-primary p-1 text-white text-center">
-        <h3>Proyectos En Proceso</h3>
-      </div>
-    </header>`;
 
   let cardProyectos = "";
   let tab = `<ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">`;
@@ -419,7 +360,7 @@ async function cardEnProceso() {
       grupo.forEach((proyecto) => {
         sections += `
                 <section class="card-content m-3" style="max-width:300px;">
-                    <div class="container-card-body border rounded d-flex shadow align-items-center p-3 hover-bg" 
+                    <div class="container-card-body border rounded d-flex shadow align-items-center p-3 hover-bg"
                          onclick="llenarModal(${proyecto.id_proyecto}, 'proyecto')">
                         <div class="card-body-icon d-flex justify-content-center align-items-center">
                             <i class="fas fa-check text-success" style="font-size: 28px;"></i>
@@ -440,13 +381,13 @@ async function cardEnProceso() {
       // Añadir botón del tab
       tab += `
             <li class="nav-item" role="presentation">
-                <button class="nav-link ${isActive}" 
-                        id="${tabId}-btn" 
-                        data-bs-toggle="tab" 
-                        data-bs-target="#${tabId}" 
-                        type="button" 
-                        role="tab" 
-                        aria-controls="${tabId}" 
+                <button class="nav-link ${isActive}"
+                        id="${tabId}-btn"
+                        data-bs-toggle="tab"
+                        data-bs-target="#${tabId}"
+                        type="button"
+                        role="tab"
+                        aria-controls="${tabId}"
                         aria-selected="${index === 0 ? "true" : "false"}">
                     ${indice}
                 </button>
@@ -454,10 +395,10 @@ async function cardEnProceso() {
 
       // Añadir contenido del tab
       divs += `
-            <div class="tab-pane fade ${index === 0 ? "show active" : ""} " 
-                 id="${tabId}" 
-                 role="tabpanel" 
-                 aria-labelledby="${tabId}-btn" 
+            <div class="tab-pane fade ${index === 0 ? "show active" : ""} "
+                 id="${tabId}"
+                 role="tabpanel"
+                 aria-labelledby="${tabId}-btn"
                  tabindex="0">
                  <div class='d-flex flex-wrap'>
                  ${sections}
@@ -477,25 +418,15 @@ async function cardEnProceso() {
   tab2 += `</ul>`;
   divs2 += `</div>`;
 
-  let btnModal = document.getElementById("action");
-  let btnClose = document.getElementById("btnClose");
-  btnModal.textContent = "Finalizado";
-  btnModal.style.display = "block";
-  btnClose.style.display = "none";
-
-  titleCard.innerHTML = titulo;
-  titleCard2.innerHTML = tituloProyecto;
-  listaCard.innerHTML = `<div class='d-flex flex-column w-100'>${tab2}${divs2}</div>`;
-  listaCard2.innerHTML = `<div class='d-flex flex-column w-100'>${tab}${divs}</div>`;
+  listaCardIncidenciasEnProceso.innerHTML = `<div class='d-flex flex-column w-100'>${tab2}${divs2}</div>`;
+  listaCardProyectosEnProceso.innerHTML = `<div class='d-flex flex-column w-100'>${tab}${divs}</div>`;
+  countEnProceso.textContent = count;
 }
 
-//FUNCIÓN PARA EL BOTON DE LAS TAREAS FINALIZADAS
-async function cardFinalizado() {
-  let idUsuario = document.getElementById("idUsuario").textContent;
-
-  // Obtener equipos del usuario
-  let query2 = await fetch(`${base_url}/TaskList/getEquipo/${idUsuario}`);
+async function getFinalizados() {
+  let query2 = await fetch(`${base_url}/TaskList/getEquipo/${userId}`);
   let equipos = await query2.json();
+  let count = 0;
 
   // Verificar si el usuario pertenece a algún equipo
   if (equipos.length === 0) {
@@ -522,28 +453,20 @@ async function cardFinalizado() {
     );
     let incidentes = await queryIncidentes.json();
     console.log(incidentes);
+
+    if (incidentes.length > 0) count = incidentes.length;
     dataIncidentes.push(...incidentes);
-    console.log(dataIncidentes);
 
     // Obtener proyectos finalizados
     let queryProyectos = await fetch(
       `${base_url}/TaskList/getProjectFinalized/${equipo.id_equipo}`
     );
     let proyectos = await queryProyectos.json();
+    if (proyectos.length > 0) count += proyectos.length;
     dataProyectos.push(...proyectos);
   }
 
-  datosFiltro.push(...dataIncidentes, ...dataProyectos);
-
   // Construir la sección de incidentes finalizados
-  let titulo = `
-    <header class="container-fluid mt-2">
-      <div class="border rounded bg-success p-1 text-white text-center">
-        <h3>Incidencias Finalizadas</h3>
-      </div>
-    </header>`;
-
-  let cardIncidentes = "";
   let tab2 = `<ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">`;
   let divs2 = `<div class="tab-content" id="myTabContent">`;
   let indice2 = 1;
@@ -564,7 +487,7 @@ async function cardFinalizado() {
       grupo.forEach((incidencia) => {
         secitonsIncidents += `
                 <section class="card-content m-3" style="max-width:300px;">
-                    <div class="container-card-body border rounded d-flex shadow align-items-center p-3 hover-bg" 
+                    <div class="container-card-body border rounded d-flex shadow align-items-center p-3 hover-bg"
                          onclick="llenarModal(${incidencia.id_incidencia}, 'incidente')">
                         <div class="card-body-icon d-flex justify-content-center align-items-center">
                             <i class="fas fa-check text-success" style="font-size: 28px;"></i>
@@ -585,13 +508,13 @@ async function cardFinalizado() {
       // Añadir botón del tab
       tab2 += `
             <li class="nav-item" role="presentation">
-                <button class="nav-link ${isActive}" 
-                        id="${tabId}-btn" 
-                        data-bs-toggle="tab" 
-                        data-bs-target="#${tabId}" 
-                        type="button" 
-                        role="tab" 
-                        aria-controls="${tabId}" 
+                <button class="nav-link ${isActive}"
+                        id="${tabId}-btn"
+                        data-bs-toggle="tab"
+                        data-bs-target="#${tabId}"
+                        type="button"
+                        role="tab"
+                        aria-controls="${tabId}"
                         aria-selected="${index === 0 ? "true" : "false"}">
                     ${indice2}
                 </button>
@@ -599,10 +522,10 @@ async function cardFinalizado() {
 
       // Añadir contenido del tab
       divs2 += `
-            <div class="tab-pane fade ${index === 0 ? "show active" : ""} " 
-                 id="${tabId}" 
-                 role="tabpanel" 
-                 aria-labelledby="${tabId}-btn" 
+            <div class="tab-pane fade ${index === 0 ? "show active" : ""} "
+                 id="${tabId}"
+                 role="tabpanel"
+                 aria-labelledby="${tabId}-btn"
                  tabindex="0">
                  <div class='d-flex flex-wrap'>
                  ${secitonsIncidents}
@@ -613,18 +536,11 @@ async function cardFinalizado() {
       indice2++;
     });
   } else {
-    secitonsIncidents += `<div class="text-center mt-4">No hay incidencias finalizadas</div>`;
+    secitonsIncidents += `<h5 class="text-center mt-4">No hay incidencias finalizadas</h5>`;
     divs2 = secitonsIncidents;
   }
 
   // Construir la sección de proyectos finalizados
-  let tituloProyecto = `
-    <header class="container-fluid mt-2">
-      <div class="border rounded bg-success p-1 text-white text-center">
-        <h3>Proyectos Finalizados</h3>
-      </div>
-    </header>`;
-
   let cardProyectos = "";
   let tab = `<ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">`;
   let divs = `<div class="tab-content" id="myTabContent">`;
@@ -644,7 +560,7 @@ async function cardFinalizado() {
       grupo.forEach((proyecto) => {
         sections += `
                 <section class="card-content m-3" style="max-width:300px;">
-                    <div class="container-card-body border rounded d-flex shadow align-items-center p-3 hover-bg" 
+                    <div class="container-card-body border rounded d-flex shadow align-items-center p-3 hover-bg"
                          onclick="llenarModal(${proyecto.id_proyecto}, 'proyecto')">
                         <div class="card-body-icon d-flex justify-content-center align-items-center">
                             <i class="fas fa-check text-success" style="font-size: 28px;"></i>
@@ -664,13 +580,13 @@ async function cardFinalizado() {
       // Añadir botón del tab
       tab += `
             <li class="nav-item" role="presentation">
-                <button class="nav-link ${isActive}" 
-                        id="${tabId}-btn" 
-                        data-bs-toggle="tab" 
-                        data-bs-target="#${tabId}" 
-                        type="button" 
-                        role="tab" 
-                        aria-controls="${tabId}" 
+                <button class="nav-link ${isActive}"
+                        id="${tabId}-btn"
+                        data-bs-toggle="tab"
+                        data-bs-target="#${tabId}"
+                        type="button"
+                        role="tab"
+                        aria-controls="${tabId}"
                         aria-selected="${index === 0 ? "true" : "false"}">
                     ${indice}
                 </button>
@@ -678,10 +594,10 @@ async function cardFinalizado() {
 
       // Añadir contenido del tab
       divs += `
-            <div class="tab-pane fade ${index === 0 ? "show active" : ""} " 
-                 id="${tabId}" 
-                 role="tabpanel" 
-                 aria-labelledby="${tabId}-btn" 
+            <div class="tab-pane fade ${index === 0 ? "show active" : ""} "
+                 id="${tabId}"
+                 role="tabpanel"
+                 aria-labelledby="${tabId}-btn"
                  tabindex="0">
                  <div class='d-flex flex-wrap'>
                  ${sections}
@@ -692,7 +608,7 @@ async function cardFinalizado() {
       indice++;
     });
   } else {
-    cardProyectos = `<div class="text-center">No hay proyectos finalizados</div>`;
+    cardProyectos = `<h5 class="text-center mt-3">No hay proyectos finalizados</h5>`;
     divs += `<div class="tab-pane fade show active">${cardProyectos}</div>`;
   }
 
@@ -701,32 +617,32 @@ async function cardFinalizado() {
   tab2 += `</ul>`;
   divs2 += `</div>`;
 
-  // Actualizar el DOM
-
-  // Definición de la sección de botones modal
-  let btnModal = document.getElementById("action");
-  let btnClose = document.getElementById("btnClose");
-  btnClose.style.display = "block";
-  btnModal.style.display = "none";
-
-  titleCard.innerHTML = titulo;
-  titleCard2.innerHTML = tituloProyecto;
-  listaCard.innerHTML = `<div class='d-flex flex-column w-100'>${tab2}${divs2}</div>`;
-  listaCard2.innerHTML = `<div class='d-flex flex-column w-100'>${tab}${divs}</div>`;
+  listaCardIncidenciasFinalizadas.innerHTML = `<div class='d-flex flex-column w-100'>${tab2}${divs2}</div>`;
+  listaCardProyectosFinalizadas.innerHTML = `<div class='d-flex flex-column w-100'>${tab}${divs}</div>`;
+  countFinalizado.textContent = count;
 }
 
-let tipoEstadoTaskLst = "";
+async function historico(tipoOperacion, descripcionOperacion, estadoOperacion) {
+  const formData = new FormData();
+  formData.append("id_usuario", userId);
+  formData.append("tipoOperacion", tipoOperacion);
+  formData.append("descripcionOperacion", descripcionOperacion);
+  formData.append("estadoOperacion", estadoOperacion);
 
-//FUNCIÓN PARA LLENAR LA INFORMACIÓN CORRESPONDIENTE DEL MODAL
+  let query = await fetch(base_url + "/Settings/insertHistorico", {
+    method: "POST",
+    body: formData,
+  });
+  let data = await query.json();
+}
+
 async function llenarModal(id, tipo) {
   console.log(id, tipo);
   idCapturado = id;
   tipoCapturado = tipo;
   let query;
   let data;
-
   tipoEstadoTaskLst = tipo;
-
   // Determinar el tipo de entidad y hacer la consulta adecuada
   if (tipo === "incidente") {
     query = await fetch(`${base_url}/TaskList/getIncidentForId/${id}`);
@@ -738,9 +654,6 @@ async function llenarModal(id, tipo) {
     console.error("Tipo desconocido");
     return;
   }
-
-  console.log(data);
-
   // Asignar los valores a los elementos del modal
   let titleModal = document.getElementById("titleModal");
   let descriptionModal = document.getElementById("descriptionModal");
@@ -748,7 +661,6 @@ async function llenarModal(id, tipo) {
   let categoryModal = document.getElementById("categoryModal");
   let endAssignment = document.getElementById("endAssignment");
   let reportBy = document.getElementById("reportBy");
-
   // Configuración del modal dependiendo del tipo de elemento
   if (tipo === "incidente") {
     titleModal.textContent = data[0].categoria;
@@ -759,10 +671,8 @@ async function llenarModal(id, tipo) {
       data[0].nombres +
       " " +
       data[0].apellidos;
-
     textModal.innerHTML =
       "<strong>Fecha de reporte:</strong> " + data[0].fecha_reporte_formateada;
-
     if (
       !data[0].fecha_solucion ||
       data[0].fecha_solucion.trim() === "" ||
@@ -774,27 +684,33 @@ async function llenarModal(id, tipo) {
         "<strong>Fecha de solución:</strong> " +
         data[0].fecha_solucion_formateada;
     }
-
     // CONDICION PARA EL INPUT OCULTO
+    document.getElementById("headerModal").classList.remove("bg-success");
+    document.getElementById("headerModal").classList.remove("bg-primary");
+    document.getElementById("headerModal").classList.add("bg-danger");
     if (data[0].estado === "En Proceso") {
       // Muestra el label y el textarea
       textarea.style.display = "block";
       label.style.display = "block";
       textarea.value = "";
-      textarea.removeAttribute("readonly"); // Establece el textarea como solo lectura
+      document.getElementById("headerModal").classList.remove("bg-success");
+      document.getElementById("headerModal").classList.remove("bg-danger");
+      document.getElementById("headerModal").classList.add("bg-primary");
     } else if (data[0].estado === "Finalizado") {
       // Muestra el label y el textarea y haz que el textarea sea de solo lectura
       textarea.style.display = "block";
       label.style.display = "block";
       textarea.textContent = data[0].descripcion_solucion;
+      document.getElementById("headerModal").classList.remove("bg-danger");
+      document.getElementById("headerModal").classList.remove("bg-primary");
+      document.getElementById("headerModal").classList.add("bg-success");
       textarea.setAttribute("readonly", true); // Establece el textarea como solo lectura
     }
   } else if (tipo === "proyecto") {
-    let [dia, mes, anio] = data[0].fecha_inicio_formateada.split("-");
-    let fechaComparar = `${dia}/${mes.replace("0", "")}/${anio}`;
-    console.log(fechaComparar === new Date().toLocaleDateString());
+    let fecha = data[0].fecha_inicio;
+    let fechaComparar = data[0].fecha_inicio_formateada;
 
-    if (fechaComparar != new Date().toLocaleDateString()) {
+    if (new Date() < new Date(fecha)) {
       Swal.fire({
         icon: "info",
         title: "Tareas Asignadas",
@@ -802,39 +718,44 @@ async function llenarModal(id, tipo) {
         showConfirmButton: false,
         timer: 2000,
       });
-
       return;
     }
+
+    document.getElementById("headerModal").classList.remove("bg-success");
+    document.getElementById("headerModal").classList.remove("bg-primary");
+    document.getElementById("headerModal").classList.add("bg-danger");
 
     titleModal.textContent = "Proyecto";
     categoryModal.textContent = data[0].nombre;
     descriptionModal.textContent = data[0].descripcion;
     textarea.style.display = "none"; // Oculta el textarea
     label.style.display = "none"; // Oculta el label del textarea
-
     textModal.innerHTML =
       "<strong>Fecha de inicio:</strong> " + data[0].fecha_inicio_formateada;
     // console.log(data);
     if (data[0].estado === "En Proceso") {
+      document.getElementById("headerModal").classList.remove("bg-success");
+      document.getElementById("headerModal").classList.remove("bg-danger");
+      document.getElementById("headerModal").classList.add("bg-primary");
       titleModal.textContent = "Proyecto";
       categoryModal.textContent = data[0].nombre;
       descriptionModal.textContent = data[0].descripcion;
       textarea.style.display = "block"; // Oculta el textarea
       label.style.display = "block"; // Oculta el label del textarea
-
       textModal.innerHTML =
         "<strong>Fecha de inicio:</strong> " + data[0].fecha_inicio_formateada;
     } else if (data[0].estado === "Finalizado") {
+      document.getElementById("headerModal").classList.remove("bg-danger");
+      document.getElementById("headerModal").classList.remove("bg-primary");
+      document.getElementById("headerModal").classList.add("bg-success");
       titleModal.textContent = "Proyecto";
       categoryModal.textContent = data[0].nombre;
       descriptionModal.textContent = data[0].descripcion;
       textarea.textContent = data[0].descripcion_solucion;
       textarea.style.display = "block"; // Oculta el textarea
       label.style.display = "block"; // Oculta el label del textarea
-
       textarea.setAttribute("readonly", true); // Establece el textarea como solo lectura
     }
-
     if (
       !data[0].fecha_fin ||
       data[0].fecha_fin.trim() === "" ||
@@ -847,88 +768,39 @@ async function llenarModal(id, tipo) {
         data[0].fecha_fin_formateada;
     }
   }
-
   const myModal = new bootstrap.Modal(document.getElementById("modalView"));
   myModal.show();
 }
 
-// FUNCIÓN PARA CAMBIAR COLORES
-$(document).ready(function () {
-  function cambiarColor(
-    boton,
-    colorNuevo,
-    botonAction,
-    colorAction,
-    div,
-    nuevoFondo
-  ) {
-    // Volver a la clase original para todos los botones excepto el botón "action"
-    $(".btn")
-      .not("#back")
-      .removeClass("btn-danger btn-primary btn-success")
-      .addClass("btn-transparent");
-    $(".modal-header")
-      .removeClass("bg-danger bg-primary bg-success")
-      .addClass("bg-transparent");
-    // Cambiar el color del botón presionado
-    $(boton).removeClass("btn-transparent").addClass(colorNuevo);
-    $(div).removeClass("bg-transparent").addClass(nuevoFondo);
-    $(botonAction).removeClass("btn-transparent").addClass(colorAction);
+function cambiarNombreBtn(estado) {
+  let btnModal = document.getElementById("action");
+  let btnClose = document.getElementById("btnClose");
+
+  if (estado === "Pendiente") {
+    btnModal.textContent = "Iniciar Tarea";
+    btnModal.style.display = "block";
+    btnClose.style.display = "none";
+  } else if (estado === "En Proceso") {
+    btnModal.textContent = "Finalizar Tarea";
+    btnModal.style.display = "block";
+    btnClose.style.display = "none";
+  } else {
+    btnClose.style.display = "block";
+    btnModal.style.display = "none";
   }
-  // Evento de clic para cada botón
-  $("#btn1").click(function () {
-    cambiarColor(
-      "#btn1",
-      "btn-danger",
-      "#action",
-      "btn-primary",
-      "#headerModal",
-      "bg-danger"
-    );
-  });
-  $("#btn2").click(function () {
-    cambiarColor(
-      this,
-      "btn-primary",
-      "#action",
-      "btn-success",
-      "#headerModal",
-      "bg-primary"
-    );
-  });
-  $("#btn3").click(function () {
-    cambiarColor(
-      this,
-      "btn-success",
-      "#action",
-      "btn-success",
-      "#headerModal",
-      "bg-success"
-    );
-  });
-});
+}
 
-//FILTRO PARA TARJETAS (búsqueda)
-function filtrarTarjetas() {
-  let input = document.getElementById("searchInput");
-  let filter = input.value.toLowerCase();
-  let cardContainers = document.querySelectorAll("#listaCard, #listaCard2");
-
-  cardContainers.forEach((container) => {
-    let cards = container.getElementsByClassName("card-wrap");
-    for (let i = 0; i < cards.length; i++) {
-      let card = cards[i];
-      let textContent = card.textContent || card.innerText;
-      if (textContent.toLowerCase().indexOf(filter) > -1) {
-        card.style.display = "";
-      } else {
-        card.style.display = "none";
-      }
-    }
+function alertTimeOut(icon, text, timer) {
+  Swal.fire({
+    toast: true,
+    position: "top-end",
+    icon,
+    text,
+    showConfirmButton: false,
+    timer,
   });
 }
 
-//FUNCION PARA CAMBIAR EL ESTADO DE LA TAREA
 formTask.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -983,19 +855,22 @@ formTask.addEventListener("submit", async (e) => {
         }
       );
 
+      getPendientes();
+      getEnProceso();
+
       if (formData.get("tipoEntidad") == "incidente") {
         tipoOperacion = "Actualización";
-        descripcionOperacion = `La Incidencia: <strong>${dataGetDatos.nombre_tipo}</strong>, 
-        Con Fecha de Asignacion: <strong>${dataGetDatos.fecha_asignacion_formateada}</strong> 
-        Y Asignada al Equipo: <strong>${dataGetDatos.nombre_equipo}</strong> 
+        descripcionOperacion = `La Incidencia: <strong>${dataGetDatos.nombre_tipo}</strong>,
+        Con Fecha de Asignacion: <strong>${dataGetDatos.fecha_asignacion_formateada}</strong>
+        Y Asignada al Equipo: <strong>${dataGetDatos.nombre_equipo}</strong>
         Cambio su estado a <strong>En Proceso</strong>`;
         estadoOperacion = 1;
         historico(tipoOperacion, descripcionOperacion, estadoOperacion);
       } else {
         tipoOperacion = "Actualización";
-        descripcionOperacion = `El Proyecto: <strong>${dataGetDatos.nombre_proyecto}</strong>, 
-        Con Fecha de Asignacion: <strong>${dataGetDatos.fecha_asignacion_formateada}</strong> 
-        Y Asignado al Equipo: <strong>${dataGetDatos.nombre_equipo}</strong> 
+        descripcionOperacion = `El Proyecto: <strong>${dataGetDatos.nombre_proyecto}</strong>,
+        Con Fecha de Asignacion: <strong>${dataGetDatos.fecha_asignacion_formateada}</strong>
+        Y Asignado al Equipo: <strong>${dataGetDatos.nombre_equipo}</strong>
         Cambio su estado a <strong>En Proceso</strong>`;
         estadoOperacion = 1;
         historico(tipoOperacion, descripcionOperacion, estadoOperacion);
@@ -1051,8 +926,8 @@ formTask.addEventListener("submit", async (e) => {
         tipoOperacion = "Actualización";
         descripcionOperacion = `La Incidencia: <strong>${
           dataGetDatos.nombre_tipo
-        }</strong>, 
-        Y Asignada al Equipo: <strong>${dataGetDatos.nombre_equipo}</strong> 
+        }</strong>,
+        Y Asignada al Equipo: <strong>${dataGetDatos.nombre_equipo}</strong>
         Cambio su estado a <strong>Finalizado</strong>, Bajo el Motivo: ${formData.get(
           "descripcion_solucion"
         )}`;
@@ -1062,8 +937,8 @@ formTask.addEventListener("submit", async (e) => {
         tipoOperacion = "Actualización";
         descripcionOperacion = `El Proyecto: <strong>${
           dataGetDatos.nombre_proyecto
-        }</strong>, 
-        Y Asignado al Equipo: <strong>${dataGetDatos.nombre_equipo}</strong> 
+        }</strong>,
+        Y Asignado al Equipo: <strong>${dataGetDatos.nombre_equipo}</strong>
         Cambio su estado a <strong>Finalizado</strong>, Bajo el Motivo: ${formData.get(
           "descripcion_solucion"
         )}`;
@@ -1088,7 +963,9 @@ formTask.addEventListener("submit", async (e) => {
           showConfirmButton: false,
           timer: 1500,
         });
-        value === "Pendiente" ? cardPendiente() : cardEnProceso();
+        // value === "Pendiente" ? getPendientes() : getEnProceso();
+        getEnProceso();
+        getFinalizados();
         btnClose.click();
       } else {
         Swal.fire({
@@ -1117,17 +994,8 @@ formTask.addEventListener("submit", async (e) => {
   }
 });
 
-// ===================== HISTORICO DE OPERACIONES ======================
-async function historico(tipoOperacion, descripcionOperacion, estadoOperacion) {
-  const formData = new FormData();
-  formData.append("id_usuario", userId);
-  formData.append("tipoOperacion", tipoOperacion);
-  formData.append("descripcionOperacion", descripcionOperacion);
-  formData.append("estadoOperacion", estadoOperacion);
-
-  let query = await fetch(base_url + "/Settings/insertHistorico", {
-    method: "POST",
-    body: formData,
-  });
-  let data = await query.json();
-}
+addEventListener("DOMContentLoaded", () => {
+  getPendientes();
+  getEnProceso();
+  getFinalizados();
+});
