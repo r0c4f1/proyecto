@@ -17,34 +17,36 @@ $fecha = new DateTime();
         </div>
     </div>
     <div class="card-container">
-    <header class="d-flex justify-content-between">
-    <h3 class="main-title">Progreso Actual</h3>
-  <button id="" onclick="modalAddGoals()" class="btn btn-primary m-3" style="<?php echo $nivelUsuario == 0 ? 'display:none;' : ''; ?>">Generar Meta</button>
-                
-        
+        <header class="d-flex justify-content-between">
+            <h3 class="main-title">Progreso Actual</h3>
+            <button id="" onclick="modalAddGoals()" class="btn btn-primary m-3"
+                style="<?php echo $nivelUsuario == 0 ? 'display:none;' : ''; ?>">Generar Meta</button>
+
+
         </header>
-        <div class="card-wrap align-items-center" id="ContenedorCard"> 
-        </div></div>
-    
+        <div class="card-wrap align-items-center" id="ContenedorCard">
+        </div>
+    </div>
+
     <div class="card-container">
         <h3 class="main-title">Historial de Metas</h3>
-    <section class="col-8">
-        <table id="table_metas" class="tabla-estilizada text-wrap" style="width:100%;">
-            <thead>
-                <tr>
-                    <th>Meta</th>
-                    <th>Fecha Creacion</th>
-                    <th>Fecha Limite</th>
-                    <th>Progreso en Procentaje</th>
-                    <th>Progreso Final</th>
-                    <th>Cantidad Objetivo</th>
-                    <th>Estado</th>
-                </tr>
-            </thead>
-        </table>
-    </section>
-</div>
-</div>
+        <section class="col-12">
+            <table id="table_metas" class="tabla-estilizada text-wrap" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th>Meta</th>
+                        <th>Fecha Creacion</th>
+                        <th>Fecha Limite</th>
+                        <th>Progreso en Procentaje</th>
+                        <th>Progreso Final</th>
+                        <th>Cantidad Objetivo</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+            </table>
+        </section>
+    </div>
+    </div>
 </main>
 <?= getModal('modal_poa') ?>
 

@@ -1,98 +1,115 @@
-<ul class="nav flex-column">
-            <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" aria-current="page" href="<?= base_url() ?>">
-                <i class="fas fa-house"></i>
-                Inicio
-              </a>
-            </li>
-</ul>
-            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase">
-            <span>Registros</span>
-            <a class="link-secondary" href="#" aria-label="Add a new report">
-              <svg class="bi"><use xlink:href="#plus-circle"/></svg>
+<div class="sidebar">
+    <div class="logo">
+        <div>
+            <a href="<?= base_url() ?>" style="display: inline-block; margin:auto;">
+                <img src="<?= media() ?>/images/1630588198601.png" alt="logo" class="img-l" />
             </a>
-          </h6>
-<ul class="nav flex-column mb-auto">
-             <!-- 
-            <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" href="<?= base_url() ?>/Usuario/registroUsuario">
-              <i class="fa-solid fa-user"></i>
-                Registro de Usuario
-              </a>
-            </li>-->
-            <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" href="<?= base_url() ?>/Atleta/registroAtleta">
-              <i class="fa-solid fa-person-running"></i>
-                Registro de Atleta
-              </a>
-            </li>
-            <!-- 
-            <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" href="<?= base_url() ?>/Evento/registroEvento">
-              <i class="fa-solid fa-calendar-days"></i>
-                Registro de Evento
-              </a>
-            </li>-->
-            <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" href="<?= base_url() ?>/Disciplina/registroDisciplina">
-              <i class="fa-solid fa-dumbbell"></i>
-                Registro de Disciplina
-              </a>
-            </li>
-    </ul>
-    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase">
-            <span>Consultas</span>
-            <a class="link-secondary" href="#" aria-label="Add a new report">
-              <svg class="bi"><use xlink:href="#plus-circle"/></svg>
-            </a>
-          </h6>
-          <ul class="nav flex-column mb-auto">
-  <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" href="<?= base_url() ?>/Atleta/verAtletas">
-			  	<i class="fa-solid fa-list"></i>
-                Ver Atletas
-              </a>
-              <a class="nav-link d-flex align-items-center gap-2" href="<?= base_url() ?>/Disciplina/verDisciplinas">
-			  	<i class="fa-solid fa-list"></i>
-                Ver Disciplinas
-              </a>
-            </li>
-    </ul>
-         
+        </div>
 
-          <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase">
-            <span>Reportes</span>
-            <a class="link-secondary" href="#" aria-label="Add a new report">
-              <svg class="bi"><use xlink:href="#plus-circle"/></svg>
-            </a>
-          </h6>
+        <ul class="menu">
 
-          <ul class="nav flex-column mb-auto">
-            <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" href="<?= base_url() ?>/Atleta/generarReportes">
-                <i class="fa-solid fa-file-lines"></i>
-                Generar Reportes
-              </a>
+            <li class="active">
+                <a href="<?= base_url() ?>">
+                    <i class="fa-solid fa-chart-pie" style="color: #000; font-size: 20px; margin-left:5px;"></i>
+                    <span>Dashboard</span>
+                </a>
             </li>
-          </ul>
-
-          <hr class="my-3">
-
-          <ul class="nav flex-column mb-auto">
-            <!-- 
-            <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" href="#">
-              <i class="fa-solid fa-gear"></i>
-                Configurar
-              </a>
-            </li>-->
-            <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" href="<?= base_url() ?>/Logout">
-              <i class="fa-solid fa-right-from-bracket"></i>
-                Salir
-              </a>
+            <?php
+            if($_SESSION["nivel"] == 0){ //PERMISO SOLO SI ES USUARIO
+            ?>
+            <li>
+                <a href="<?= base_url() ?>/TaskList/taskList">
+                    <i class="fa-solid fa-book" style="color: #000; font-size: 20px; margin-left:5px;"></i>
+                    <span>Asignaciones</span>
+                </a>
             </li>
-            <center>
-              <img src="<?= media() ?>/images/logo.gif" alt="UPTOS" width="70%">
-            </center>
-</ul>
+            <?php
+            } // CIERRE DEL PERMISO SOLO SI ES USUARIO
+            ?>
+            <li>
+                <a href="<?= base_url() ?>/Poa/poa">
+                    <i class="fa-solid fa-chart-column" style="color: #000; font-size: 20px; margin-left:5px;"></i>
+                    <span>Metas</span>
+                </a>
+            <li>
+                <a href="<?= base_url() ?>/Project/project">
+                    <i class="fa-solid fa-list-check" style="color: #000; font-size: 20px; margin-left:5px;"></i>
+                    <span>Proyectos</span>
+                </a>
+            </li>
+            <li>
+                <a href="<?= base_url() ?>/Teams/teams">
+
+                    <i class="fa-solid fa-people-group" style="color: #000; font-size: 20px; margin-left:5px;"></i>
+                    <span>Equipos</span>
+                </a>
+            </li>
+            <li>
+                <a href="<?= base_url() ?>/Incidents/incidents">
+                    <i class="fa-solid fa-wrench" style="color: #000; font-size: 20px; margin-left:3px;"></i>
+                    <span>Incidencias</span>
+                </a>
+            </li>
+            <?php
+            if($_SESSION["nivel"] == 1 || $_SESSION["nivel"] == 2){ //PERMISO SOLO SI ES JEFE O ADMIN
+            ?>
+            <li>
+                <a href="<?= base_url() ?>/Assignments/assignments">
+                    <i class="fa-solid fa-thumbtack" style="color: #000; font-size: 20px; margin-left:5px;"></i>
+                    <span>Asignaciones</span>
+                </a>
+            </li>
+            <?php
+            } // CIERRE DEL PERMISO SOLO SI ES JEFE O ADMIN
+            ?>
+            <li>
+                <a href="<?= base_url() ?>/Information/information">
+                    <i class="fa-regular fa-file-lines" style="color: #000; font-size: 20px; margin-left:5px;"></i>
+                    <span>Informes</span>
+                </a>
+            </li>
+            </li>
+            <li>
+                <a href="<?= base_url() ?>/Training/training">
+                    <i class="fa-solid fa-arrow-trend-up" style="color: #000; font-size: 18px; margin-left:3px;"></i>
+                    <span>Capacitación</span>
+                </a>
+            </li>
+            <li>
+                <a href="<?= base_url() ?>/Users/users">
+                    <i class="fa-regular fa-user" style="color: #000; font-size: 20px; margin-left:5px;"></i>
+                    <span>Usuarios</span>
+                </a>
+            </li>
+            <li>
+                <a href="<?= base_url() ?>/Resources/resources">
+                    <i class="fa-solid fa-boxes-stacked" style="color: #000; font-size: 20px; margin-left:5px;"></i>
+                    <span>Recursos</span>
+                </a>
+            </li>
+            <?php if ($_SESSION['nivel'] == 2) { ?>
+            <li>
+                <a href="<?= base_url() ?>/Settings/settings">
+                    <i class="fa-solid fa-sliders" style="color: #000; font-size: 20px; margin-left:5px;"></i>
+                    <span>Ajustes</span>
+                </a>
+            </li>
+            <?php } ?>
+            <li>
+                <a href="<?= media() ?>/manual/MANUAL DE USUARIO.PDF" target="_blank">
+                    <i class="fas fa-circle-question text-secondary" style="font-size: 18px; margin-left:5px;"></i>
+                    <span>Ayuda</span>
+                </a>
+            </li>
+            <li class="logout">
+                <a href="<?= base_url() ?>/Logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"
+                        style="color: #000; font-size: 20px; margin-left:5px;"></i>
+                    <span>Cerrar</span>
+                </a>
+            </li>
+
+
+        </ul>
+    </div>
+</div>

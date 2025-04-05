@@ -14,36 +14,17 @@ body {
   cursor: pointer;
 }
 .sidebar {
-  position: sticky !important;
+  position: sticky;
   top: 0;
   left: 0;
   bottom: 0;
-  width: 90px;
+  width: 250px;
   height: 100vh;
   padding: 8 1.7rem;
-  overflow-y: scroll;
+  overflow-y: hidden;
   overflow-x: hidden;
   transition: all 0.5s linear;
   background: #f5f5fa;
-}
-.sidebar::-webkit-scrollbar {
-  width: 5px; /* Ajusta el ancho de la barra de desplazamiento */
-}
-.sidebar::-webkit-scrollbar-thumb {
-  background-color: #cdcfd8; /* Color del pulgar de la barra de desplazamiento */
-  border-radius: 6px; /* Redondear las esquinas del pulgar */
-}
-.sidebar {
-  scrollbar-width: thin;
-  scrollbar-color: #cdcfd8 #f5f5fa;
-}
-
-.sidebar::-webkit-scrollbar-button {
-  display: none;
-}
-.sidebar:hover {
-  width: 230px !important;
-  transition: 0.5s;
 }
 
 .inscritos::-webkit-scrollbar {

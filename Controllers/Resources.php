@@ -164,4 +164,3 @@ class Resources extends Controllers{
         die();
     }
 }
-

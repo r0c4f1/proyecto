@@ -26,7 +26,7 @@ sideBar(); ?>
         </article>
         <hr>
 
-        <div class="col-11 justify-content-center">
+        <div class="col-12 justify-content-center">
             <table id="asignaciones" class="tabla-estilizada text-wrap" style="width:100%;">
                 <thead>
                     <tr>
@@ -53,7 +53,7 @@ sideBar(); ?>
         </article>
         <hr>
 
-        <div class="col-11 justify-content-center">
+        <div class="col-12 justify-content-center">
             <table id="asignacionesProyecto" class="tabla-estilizada text-wrap" style="width:100%;">
                 <thead>
                     <tr>

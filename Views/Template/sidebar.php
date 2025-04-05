@@ -1,8 +1,6 @@
-
-
 <div class="sidebar">
     <div class="logo">
-        <div class="img-l">
+        <div class="img-l d-flex justify-content-center align-items-center">
             <a href="<?= base_url() ?>">
                 <img src="<?= media() ?>/images/1630588198601.png" alt="logo" />
             </a>
@@ -98,11 +96,11 @@
             </li>
             <?php } ?>
             <li>
-    <a href="<?= media() ?>/manual/MANUAL DE USUARIO.PDF" target="_blank">
-        <i class="fas fa-circle-question text-secondary" style="font-size: 18px; margin-left:5px;"></i>
-        <span>Ayuda</span>
-    </a>
-</li>
+                <a href="<?= media() ?>/manual/MANUAL DE USUARIO.PDF" target="_blank">
+                    <i class="fas fa-circle-question text-secondary" style="font-size: 18px; margin-left:5px;"></i>
+                    <span>Ayuda</span>
+                </a>
+            </li>
             <li class="logout">
                 <a href="<?= base_url() ?>/Logout">
                     <i class="fa-solid fa-arrow-right-from-bracket"
@@ -110,7 +108,7 @@
                     <span>Cerrar</span>
                 </a>
             </li>
-         
+
 
         </ul>
     </div>

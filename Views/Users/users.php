@@ -4,8 +4,8 @@ sideBar(); ?>
 $nivelUsuario = $_SESSION['nivel'];
 ?>
 <script>
-    // Definir la variable global nivelUsuario a partir del valor PHP
-    var nivelUsuario = <?php echo $nivelUsuario; ?>;
+// Definir la variable global nivelUsuario a partir del valor PHP
+var nivelUsuario = <?php echo $nivelUsuario; ?>;
 </script>
 
 <main class="main">
@@ -24,9 +24,9 @@ $nivelUsuario = $_SESSION['nivel'];
                 <h5><?= $_SESSION['nameUser'] ?></h5>
             </div>
         </div>
-       
+
     </div>
-   
+
     <section class="card-container">
         <article class="d-flex justify-content-between">
             <div>
@@ -44,29 +44,31 @@ $nivelUsuario = $_SESSION['nivel'];
                 </label>
             </div>
             <div>
-            <?php
+                <?php
             if ($_SESSION['nivel'] != 0) { // Mostrar "Opciones" si el nivel NO es 0
             ?> <button class="btn btn-primary" onclick="modalAddUserModal()">Agregar Usuario</button>
                 <a href="<?= base_url() ?>/Units/units">
                     <button class="btn btn-secondary">Ver Unidades</button>
                 </a>
 
-            <?php
+                <?php
             }
             ?>
-            <div class="d-flex justify-content-center mt-3">
-    <div class="dropdown">
-        <button class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-          Gráfico de Discapacidades
-        </button>
-        <div class="dropdown-menu p-3" aria-labelledby="dropdownMenuButton" style="min-width: 350px;">
-            <canvas id="barChart"></canvas>
-        </div>
-    </div>
-</div></div>
+                <div class="d-flex justify-content-center mt-3">
+                    <div class="dropdown">
+                        <button class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuButton"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Gráfico de Discapacidades
+                        </button>
+                        <div class="dropdown-menu p-3" aria-labelledby="dropdownMenuButton" style="min-width: 350px;">
+                            <canvas id="barChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </article>
         <hr>
-        <div class="col-11">
+        <div class="col-12">
             <table id="usuarios" class="tabla-estilizada text-wrap">
                 <thead>
                     <tr>
@@ -84,7 +86,7 @@ $nivelUsuario = $_SESSION['nivel'];
                         <?php
                         if ($_SESSION['nivel'] != 0) { // Mostrar "Opciones" si el nivel NO es 0
                         ?>
-                            <th>Opciones</th>
+                        <th>Opciones</th>
                         <?php
                         }
                         ?>

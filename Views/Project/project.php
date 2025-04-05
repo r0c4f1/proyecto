@@ -3,8 +3,8 @@ sideBar();
 $nivelUsuario = $_SESSION['nivel'];
 ?>
 <script>
-  // Definir la variable global nivelUsuario a partir del valor PHP
-  var nivelUsuario = <?php echo $nivelUsuario; ?>;
+// Definir la variable global nivelUsuario a partir del valor PHP
+var nivelUsuario = <?php echo $nivelUsuario; ?>;
 </script>
 <main class="main">
     <div class="header-wrap">
@@ -21,18 +21,18 @@ $nivelUsuario = $_SESSION['nivel'];
 
     <section class="card-container">
         <header class="d-flex justify-content-between">
-        <h3 class="main-title">Lista de Proyectos</h3>
-           
+            <h3 class="main-title">Lista de Proyectos</h3>
+
             <?php
                         if ($_SESSION['nivel'] != 0) { // Mostrar "Opciones" si el nivel NO es 0
                         ?><button class="btn btn-primary" onclick="modalAddProjectModal()">Agregar Proyecto</button>
-                <?php
+            <?php
                     }
                     ?>
-            
+
         </header>
         <hr>
-        <section class="col-10">
+        <section class="col-12">
             <table id="proyecto" class="tabla-estilizada text-wrap" style="width:100%;">
                 <thead>
                     <tr>
@@ -42,7 +42,7 @@ $nivelUsuario = $_SESSION['nivel'];
                         <?php
                         if ($_SESSION['nivel'] != 0) { // Mostrar "Opciones" si el nivel NO es 0
                         ?>
-                            <th>Opciones</th>
+                        <th>Opciones</th>
                         <?php
                         }
                         ?>
@@ -56,7 +56,7 @@ $nivelUsuario = $_SESSION['nivel'];
     if ($_SESSION['nivel'] != 0) { // -------------- Esto significa que los usuarios no pueden asignar -----------
     ?>
     <section class="card-container">
-    
+
         <header>
             <h3 class="main-title">Asignar Proyecto</h3>
             <h3 id="asignacion"></h3>
@@ -70,11 +70,11 @@ $nivelUsuario = $_SESSION['nivel'];
             </div>
             <div class="d-flex justify-content-between align-items-center">
                 <input type="text" class="mt-4 form-control w-25" placeholder="Buscar"
-                       onkeyup="filtroListaInscritos(event)" id="buscador" disabled>
+                    onkeyup="filtroListaInscritos(event)" id="buscador" disabled>
             </div>
             <hr>
-            <article class="container col-12 mt-2 inscritos row flex-wrap justify-content-start align-items-start" id="listaProyectos"
-                     style="max-height:600px; overflow-y:scroll;">
+            <article class="container col-12 mt-2 inscritos row flex-wrap justify-content-start align-items-start"
+                id="listaProyectos" style="max-height:600px; overflow-y:scroll;">
             </article>
         </section>
     </section>
